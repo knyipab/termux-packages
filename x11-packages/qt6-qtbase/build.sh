@@ -20,6 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DFEATURE_no_direct_extern_access=ON
 -DFEATURE_openssl_linked=ON
 -DFEATURE_system_sqlite=ON
+-DFEATURE_forkfd_pidfd=OFF
 -DINSTALL_ARCHDATADIR=lib/qt6
 -DINSTALL_BINDIR=lib/qt6/bin
 -DINSTALL_DATADIR=share/qt6
