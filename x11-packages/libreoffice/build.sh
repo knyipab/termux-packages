@@ -14,7 +14,7 @@ TERMUX_PKG_BUILD_IN_SRC=true
 # TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-android-ndk"
 
 termux_step_pre_configure() {
-	apt install openjdk-17-jdk
+	apt install openjdk-8-jdk
 }
 
 termux_step_pre_configure() {
