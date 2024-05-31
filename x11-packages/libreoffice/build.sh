@@ -13,7 +13,7 @@ TERMUX_PKG_DEPENDS="cups, openjdk-17, python"
 TERMUX_PKG_BUILD_IN_SRC=true
 # TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-android-ndk"
 
-termux_step_host_build() {
+termux_step_pre_configure() {
 	apt install openjdk-17-jdk
 }
 
