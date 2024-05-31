@@ -11,10 +11,10 @@ TERMUX_PKG_SHA256=f6e2059cd85d07793e8d95828b2412906bdba8bf61a5f76b8c51907898481e
 # TODO: to be added
 TERMUX_PKG_DEPENDS="cups, openjdk-17, python"
 TERMUX_PKG_BUILD_IN_SRC=true
-# TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-android-ndk"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-jdk-home=/usr/lib/jvm/java-17-openjdk-amd64"
 
 termux_step_pre_configure() {
-	apt install openjdk-8-jdk
+	apt install openjdk-17-jdk
 }
 
 termux_step_pre_configure() {
