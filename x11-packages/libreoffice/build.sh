@@ -14,4 +14,5 @@ TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_pre_configure() {
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure.ac
+	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure
 }
