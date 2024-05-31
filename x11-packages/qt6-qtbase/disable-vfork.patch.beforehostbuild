@@ -1,0 +1,14 @@
+diff --git a/src/corelib/io/qprocess_unix.cpp b/src/corelib/io/qprocess_unix.cpp
+index fcbce92a..38d7a83a 100644
+--- a/src/corelib/io/qprocess_unix.cpp
++++ b/src/corelib/io/qprocess_unix.cpp
+@@ -627,6 +627,9 @@ __attribute__((weak)) pid_t __interceptor_vfork();
+ 
+ inline bool globalUsingVfork() noexcept
+ {
++#if defined(__ANDROID__)
++    return false;
++#endif
+ #if defined(__SANITIZE_ADDRESS__) || __has_feature(address_sanitizer)
+     // ASan writes to global memory, so we mustn't use vfork().
+     return false;
