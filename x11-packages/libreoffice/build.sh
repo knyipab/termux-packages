@@ -11,10 +11,11 @@ TERMUX_PKG_SHA256=f6e2059cd85d07793e8d95828b2412906bdba8bf61a5f76b8c51907898481e
 # TODO: to be added
 TERMUX_PKG_DEPENDS="cups, openjdk-17, python"
 TERMUX_PKG_BUILD_IN_SRC=true
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-jdk-home=/usr/lib/jvm/java-17-openjdk-amd64"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--without-java"
+# TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-jdk-home=/usr/lib/jvm/java-17-openjdk-amd64"
 
 termux_step_pre_configure() {
-	$TERMUX_PKG_BUILDER_DIR/setup-jdk.sh
+	# $TERMUX_PKG_BUILDER_DIR/setup-jdk.sh
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure.ac
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure
 }
