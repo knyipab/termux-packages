@@ -15,9 +15,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-jdk-home=/usr/lib/jvm/java-17-openjdk-am
 
 termux_step_pre_configure() {
 	apt install openjdk-17-jdk
-}
-
-termux_step_pre_configure() {
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure.ac
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure
 }
