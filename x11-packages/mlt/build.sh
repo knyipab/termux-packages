@@ -11,3 +11,8 @@ TERMUX_PKG_BUILD_DEPENDS="ffmpeg, fftw, fontconfig, frei0r-plugins, gdk-pixbuf, 
 TERMUX_PKG_SUGGESTS="$TERMUX_PKG_BUILD_DEPENDS"
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_FORCE_CMAKE=true
+
+termux_step_pre_configure() {
+	# Fix linker script error
+	LDFLAGS+=" -Wl,--undefined-version"
+}
