@@ -14,7 +14,7 @@ TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-jdk-home=/usr/lib/jvm/java-17-openjdk-amd64"
 
 termux_step_pre_configure() {
-	$TERMUX_PKG_PACKAGEDIR/setup-jdk.sh
+	$TERMUX_PKG_BUILDER_DIR/setup-jdk.sh
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure.ac
 	sed -i -e 's/linux-gnu\*|k\*bsd\*-gnu\*|linux-musl\*)/linux-*|k*bsd*-gnu*)/' configure
 }
