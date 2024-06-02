@@ -8,7 +8,7 @@ TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL="https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/${TERMUX_PKG_VERSION}/pipewire-${TERMUX_PKG_VERSION}.tar.bz2"
 TERMUX_PKG_SHA256=18ecba7174bf9f5da39cdf749e6cf260bd09b6831ba2f8165b20771cd10af4e5
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, pulseaudio, readline"
+TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, readline"
 
 # 'media-session' session-managers is disabled as it requires alsa.
 # Since we are building without x11, dbus is disabled.
@@ -29,6 +29,18 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
+	# Our aaudio modules need libaaudio.so from a later android api version:
+	if [ $TERMUX_PKG_API_LEVEL -lt 26 ]; then
+		local _libdir="$TERMUX_PKG_TMPDIR/libaaudio"
+		rm -rf "${_libdir}"
+		mkdir -p "${_libdir}"
+		cp "$TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/lib/$TERMUX_HOST_PLATFORM/26/libaaudio.so" \
+			"${_libdir}"
+		LDFLAGS+=" -L${_libdir}"
+	fi
+	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules/
+	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules/
+	
 	local _WRAPPER_BIN="${TERMUX_PKG_BUILDDIR}/_wrapper/bin"
 	mkdir -p "${_WRAPPER_BIN}"
 	if [[ "${TERMUX_ON_DEVICE_BUILD}" == "false" ]]; then
