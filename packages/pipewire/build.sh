@@ -28,6 +28,11 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dwireplumber:system-lua-version=54
 "
 
+termux_step_post_get_source() {
+	sed -i "s|@TERMUX_PKG_BUILDER_DIR@|${TERMUX_PKG_BUILDER_DIR}|g" \
+		"${TERMUX_PKG_BUILDER_DIR}"/0001-reallocarray.patch
+}
+
 termux_step_pre_configure() {
 	# Our aaudio modules need libaaudio.so from a later android api version:
 	if [ $TERMUX_PKG_API_LEVEL -lt 26 ]; then
@@ -38,8 +43,10 @@ termux_step_pre_configure() {
 			"${_libdir}"
 		LDFLAGS+=" -L${_libdir}"
 	fi
-	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules/
-	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules/
+	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules
+	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules
+	cp $TERMUX_PKG_BUILDER_DIR/module-protocol-pulse/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules/module-protocol-pulse/modules
+	cp $TERMUX_PKG_BUILDER_DIR/module-protocol-pulse/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules/module-protocol-pulse/modules
 	
 	local _WRAPPER_BIN="${TERMUX_PKG_BUILDDIR}/_wrapper/bin"
 	mkdir -p "${_WRAPPER_BIN}"
@@ -54,6 +61,4 @@ termux_step_pre_configure() {
 
 	sed -i "s/'-Werror=strict-prototypes',//" ${TERMUX_PKG_SRCDIR}/meson.build
 	CFLAGS+=" -Dindex=strchr -Drindex=strrchr"
-	sed "s|@TERMUX_PKG_BUILDER_DIR@|${TERMUX_PKG_BUILDER_DIR}|g" \
-		"${TERMUX_PKG_BUILDER_DIR}"/reallocarray.diff | patch -p1
 }

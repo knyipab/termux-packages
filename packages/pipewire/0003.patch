@@ -15,18 +15,19 @@ index cda6011..5fde942 100644
  epoll_shim_dep = (host_machine.system() == 'freebsd' or host_machine.system() == 'midnightbsd'
      ? dependency('epoll-shim', required: true)
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
-index 0d54cf9..de803b4 100644
+index 0d54cf9..06a5678 100644
 --- a/src/daemon/pipewire-pulse.conf.in
 +++ b/src/daemon/pipewire-pulse.conf.in
-@@ -46,6 +46,7 @@ context.modules = [
- 	    # to have config per server.
-         }
-     }
-+    { name = libpipewire-module-aaudio-sink }
- ]
- 
- # Extra scripts can be started here. Setup in default.pa can be moved in
-@@ -88,9 +89,9 @@ stream.properties = {
+@@ -61,7 +61,7 @@ context.exec = [
+ #      args = "<module-name> <module-args>"
+ #      ( flags = [ nofail ] )
+ pulse.cmd = [
+-    { cmd = "load-module" args = "module-always-sink" flags = [ ] }
++    { cmd = "load-module" args = "module-aaudio-sink" flags = [ ] }
+     { cmd = "load-module" args = "module-device-manager" flags = [ ] }
+     { cmd = "load-module" args = "module-device-restore" flags = [ ] }
+     { cmd = "load-module" args = "module-stream-restore" flags = [ ] }
+@@ -88,9 +88,9 @@ stream.properties = {
  pulse.properties = {
      # the addresses this server listens on
      server.address = [
@@ -39,7 +40,7 @@ index 0d54cf9..de803b4 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index ceaa701..a33d5fa 100644
+index 922a384..4689f30 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
 @@ -4,6 +4,8 @@ subdir('spa')

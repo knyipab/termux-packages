@@ -95,12 +95,12 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 			"( audio.format=<format, default:"DEFAULT_FORMAT"> ) "			\
 			"( audio.rate=<sample rate, default: "SPA_STRINGIFY(DEFAULT_RATE)"> ) "			\
 			"( audio.channels=<number of channels, default:"SPA_STRINGIFY(DEFAULT_CHANNELS) "> ) "	\
-			"( audio.position=<channel map, default:"DEFAULT_POSITION"> ] "		\
+			"( audio.position=<channel map, default:"DEFAULT_POSITION"> ) "		\
 			"( stream.props=<properties> ) "
 
 
 static const struct spa_dict_item module_props[] = {
-	{ PW_KEY_MODULE_AUTHOR, "Ronald Yip" },
+	{ PW_KEY_MODULE_AUTHOR, "Ronald Y" },
 	{ PW_KEY_MODULE_DESCRIPTION, "AAudio (Andoird) audio sink" },
 	{ PW_KEY_MODULE_USAGE, MODULE_USAGE },
 	{ PW_KEY_MODULE_VERSION, PACKAGE_VERSION },
@@ -141,6 +141,7 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
+	pw_log_debug("state_changed to %d", state);
 	struct impl *impl = d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
@@ -159,6 +160,7 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 
 static void playback_stream_process(void *d)
 {
+	pw_log_debug("playback");
 	struct impl *impl = d;
 	struct pw_buffer *buf;
 	struct spa_data *bd;
@@ -444,6 +446,7 @@ static void copy_props(struct impl *impl, struct pw_properties *props, const cha
 SPA_EXPORT
 int pipewire__module_init(struct pw_impl_module *module, const char *args)
 {
+	pw_log_debug("aaudio sink init");
 	struct pw_context *context = pw_impl_module_get_context(module);
 	struct pw_properties *props = NULL;
 	uint32_t id = pw_global_get_id(pw_impl_module_get_global(module));
@@ -545,6 +548,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 
 	pw_impl_module_update_properties(module, &SPA_DICT_INIT_ARRAY(module_props));
 
+	pw_log_debug("aaudio-sink finishs init");
 	return 0;
 
 error:
