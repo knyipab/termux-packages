@@ -18,6 +18,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-sdremote
 --disable-sdremote-bluetooth
 
+
 --without-java
 --disable-nss
 --without-webdav
