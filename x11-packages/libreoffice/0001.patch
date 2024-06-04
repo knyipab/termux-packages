@@ -1,3 +1,18 @@
+diff --git a/configure b/configure
+index 644f94717..0083662b5 100755
+--- a/configure
++++ b/configure
+@@ -2506,8 +2506,8 @@ if test "x$host_alias" != x; then
+   fi
+ fi
+ 
+-ac_tool_prefix=
+-test -n "$host_alias" && ac_tool_prefix=$host_alias-
++ac_tool_prefix=x86_64-linux-android-
++# test -n "$host_alias" && ac_tool_prefix=$host_alias-
+ 
+ test "$silent" = yes && exec 6>/dev/null
+ 
 diff --git a/svl/Library_svl.mk b/svl/Library_svl.mk
 index 04abb8c6c..48aad371e 100644
 --- a/svl/Library_svl.mk

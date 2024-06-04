@@ -96,6 +96,6 @@ termux_step_pre_configure() {
 	export QT6DIR=$TERMUX_PREFIX/lib/qt6
 	sed -i "109d" $TERMUX_PKG_SRCDIR/i18npool/source/breakiterator/data/sent.txt
 	## fix error: <cstdlib> tried including <stdlib.h>
-	CFLAGS+=" -Wno-implicit-function-declaration"
-	CPLUS_INCLUDE_PATH+=" -I$TERMUX_PREFIX/include/"
+	# CFLAGS+=" -Wno-implicit-function-declaration"
+	# CPLUS_INCLUDE_PATH+=" -I$TERMUX_PREFIX/include/"
 }
