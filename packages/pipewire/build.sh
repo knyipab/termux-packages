@@ -8,10 +8,9 @@ TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL="https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/${TERMUX_PKG_VERSION}/pipewire-${TERMUX_PKG_VERSION}.tar.bz2"
 TERMUX_PKG_SHA256=18ecba7174bf9f5da39cdf749e6cf260bd09b6831ba2f8165b20771cd10af4e5
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, readline, dbus, libx11"
+TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, readline, dbus"
 
 # 'media-session' session-managers is disabled as it requires alsa.
-# Since we are building without x11, dbus is disabled.
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dgstreamer=disabled
 -Dgstreamer-device-provider=disabled
@@ -21,7 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dalsa=disabled
 -Dpipewire-jack=disabled
 -Djack=disabled
--Ddbus=enabled
+-Ddbus=disabled
 -Dsession-managers=['wireplumber']
 -Dffmpeg=enabled
 -Dwireplumber:system-lua=true
@@ -61,5 +60,4 @@ termux_step_pre_configure() {
 
 	sed -i "s/'-Werror=strict-prototypes',//" ${TERMUX_PKG_SRCDIR}/meson.build
 	CFLAGS+=" -Dindex=strchr -Drindex=strrchr"
-	termux_setup_rust
 }
