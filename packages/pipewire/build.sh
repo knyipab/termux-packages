@@ -61,4 +61,5 @@ termux_step_pre_configure() {
 
 	sed -i "s/'-Werror=strict-prototypes',//" ${TERMUX_PKG_SRCDIR}/meson.build
 	CFLAGS+=" -Dindex=strchr -Drindex=strrchr"
+	termux_setup_rust
 }
