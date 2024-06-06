@@ -32,6 +32,7 @@
 #undef __INTRODUCED_IN
 #define __INTRODUCED_IN(api_level)
 #include <aaudio/AAudio.h>
+#include <audio_common.h>
 
 /** \page page_module_aaudio_sink AAudio Sink
  *
@@ -181,6 +182,7 @@ static void playback_stream_process(void *d)
         spa_zero(data);
 	    data = SPA_PTROFF(bd->data, offs, void);
         
+		// TODO: investigate timeout
         if (returnCode = AAudioStream_write(impl->aaudio_stream, data, size / impl->frame_size, 200) < 0)
             pw_log_error("AAudioStream_write error: %s", AAudio_convertResultToText(returnCode));
 	}

@@ -159,18 +159,10 @@ static int module_aaudio_sink_prepare(struct module * const module)
 		pw_properties_set(props, "node_description", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_format")) != NULL) {
-		// TODO: 
-		// pw_log_error("Unsupported format");
-		// res = -EINVAL;
-		// goto out;
 		pw_properties_set(aaudio_props, "audio.format", str);
 		pw_properties_set(props, "audio_format", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_rate")) != NULL) {
-		// TODO: 
-		// pw_log_error("Unsupported rate");
-		// res = -EINVAL;
-		// goto out;
 		pw_properties_set(aaudio_props, "audio.rate", str);
 		pw_properties_set(props, "audio_rate", NULL);
 	}
