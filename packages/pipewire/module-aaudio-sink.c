@@ -182,7 +182,7 @@ static void playback_stream_process(void *d)
         spa_zero(data);
 	    data = SPA_PTROFF(bd->data, offs, void);
         
-        if (returnCode = AAudioStream_write(impl->aaudio_stream, data, size / impl->frame_size, 0) < 0)
+        if (returnCode = AAudioStream_write(impl->aaudio_stream, data, size / impl->frame_size, 200) < 0)
             pw_log_error("AAudioStream_write error: %s", AAudio_convertResultToText(returnCode));
 	}
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
@@ -208,7 +208,7 @@ static void error_callback(AAudioStream *stream, void *impl, aaudio_result_t err
 #define CHK(stmt) { \
     aaudio_result_t res = stmt; \
     if (res != AAUDIO_OK) { \
-        fprintf(stderr, "AAudio error %s at %s:%d\n", AAudio_convertResultToText(res), __FILE__, __LINE__); \
+        pw_log_error("AAudio error %s at %s:%d\n", AAudio_convertResultToText(res), __FILE__, __LINE__); \
         goto fail; \
     } \
 }
