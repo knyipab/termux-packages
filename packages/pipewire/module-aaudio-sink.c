@@ -243,7 +243,7 @@ static int open_aaudio_stream(struct impl *impl)
     CHK(AAudioStreamBuilder_delete(impl->aaudio_builder));
 
     impl->info.rate = AAudioStream_getSampleRate(impl->aaudio_stream);
-
+	AAudioStream_requestStart(impl->aaudio_stream);
     return 0;
 
 fail:
