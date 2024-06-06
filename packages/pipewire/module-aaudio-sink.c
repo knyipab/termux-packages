@@ -32,7 +32,7 @@
 #undef __INTRODUCED_IN
 #define __INTRODUCED_IN(api_level)
 #include <aaudio/AAudio.h>
-#include <audio_common.h>
+#define AAUDIO_NANOS_PER_MILLISECOND 1000000L
 
 /** \page page_module_aaudio_sink AAudio Sink
  *
