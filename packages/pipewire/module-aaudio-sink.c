@@ -227,7 +227,7 @@ static int open_aaudio_stream(struct impl *impl)
     AAudioStreamBuilder_setErrorCallback(impl->aaudio_builder, error_callback, impl);
 
     switch (impl->info.format) {
-        case SPA_AUDIO_FORMAT_S16_LE: format = AAUDIO_FORMAT_PCM_I16; break;
+        case SPA_AUDIO_FORMAT_S16_LE: format = AAUDIO_FORMAT_PCM_I16; pw_log_error( "use AAUDIO_FORMAT_PCM_I16. "); break;
         case SPA_AUDIO_FORMAT_S24_LE: format = AAUDIO_FORMAT_PCM_I24_PACKED; break;
         case SPA_AUDIO_FORMAT_S32_LE: format = AAUDIO_FORMAT_PCM_I32; break;
         case SPA_AUDIO_FORMAT_F32_LE: format = AAUDIO_FORMAT_PCM_FLOAT; break;
