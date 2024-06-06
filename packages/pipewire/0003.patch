@@ -14,6 +14,25 @@ index cda6011..5fde942 100644
  # On FreeBSD and MidnightBSD, epoll-shim library is required for eventfd() and timerfd()
  epoll_shim_dep = (host_machine.system() == 'freebsd' or host_machine.system() == 'midnightbsd'
      ? dependency('epoll-shim', required: true)
+diff --git a/pipewire-jack/src/pipewire-jack.c b/pipewire-jack/src/pipewire-jack.c
+index 5a17d00..0722dd3 100644
+--- a/pipewire-jack/src/pipewire-jack.c
++++ b/pipewire-jack/src/pipewire-jack.c
+@@ -7131,8 +7131,14 @@ int jack_client_kill_thread(jack_client_t* client, jack_native_thread_t thread)
+ 
+ 	return_val_if_fail(client != NULL, -EINVAL);
+ 
++#ifndef __ANDROID__
+ 	pw_log_debug("cancel thread %p", (void *) thread);
+ 	pthread_cancel(thread);
++#else
++	// corresponding patches are done on the client side code (libjack) to accept SIGUSR2
++	pw_log_debug("kill thread %p with SIGUSR2 (android)", (void *) thread);
++	pthread_kill(thread, SIGUSR2);
++#endif
+ 	pw_log_debug("join thread %p", (void *) thread);
+ 	spa_thread_utils_join(&c->context.thread_utils, (struct spa_thread*)thread, &status);
+ 	pw_log_debug("stopped thread %p", (void *) thread);
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
 index 0d54cf9..06a5678 100644
 --- a/src/daemon/pipewire-pulse.conf.in
