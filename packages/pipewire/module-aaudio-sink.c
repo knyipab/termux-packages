@@ -141,7 +141,7 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
-	pw_log_debug("state_changed to %d", state);
+	pw_log_debug("aaudio state changed to %d", state);
 	struct impl *impl = d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
@@ -160,7 +160,6 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 
 static void playback_stream_process(void *d)
 {
-	pw_log_debug("playback");
 	struct impl *impl = d;
 	struct pw_buffer *buf;
 	struct spa_data *bd;
@@ -215,19 +214,17 @@ static void error_callback(AAudioStream *stream, void *impl, aaudio_result_t err
 
 static int open_aaudio_stream(struct impl *impl)
 {
-    // bool want_float;
     aaudio_format_t format;
 
     CHK(AAudio_createStreamBuilder(&impl->aaudio_builder));
 
     AAudioStreamBuilder_setDirection(impl->aaudio_builder, AAUDIO_DIRECTION_OUTPUT);
     
-    // TODO: buffer
-    AAudioStreamBuilder_setPerformanceMode(impl->aaudio_builder, AAUDIO_PERFORMANCE_MODE_NONE);// + impl->pm);
+    AAudioStreamBuilder_setPerformanceMode(impl->aaudio_builder, AAUDIO_PERFORMANCE_MODE_NONE);
     AAudioStreamBuilder_setErrorCallback(impl->aaudio_builder, error_callback, impl);
 
     switch (impl->info.format) {
-        case SPA_AUDIO_FORMAT_S16_LE: format = AAUDIO_FORMAT_PCM_I16; pw_log_error( "use AAUDIO_FORMAT_PCM_I16. "); break;
+        case SPA_AUDIO_FORMAT_S16_LE: format = AAUDIO_FORMAT_PCM_I16; break;
         case SPA_AUDIO_FORMAT_S24_LE: format = AAUDIO_FORMAT_PCM_I24_PACKED; break;
         case SPA_AUDIO_FORMAT_S32_LE: format = AAUDIO_FORMAT_PCM_I32; break;
         case SPA_AUDIO_FORMAT_F32_LE: format = AAUDIO_FORMAT_PCM_FLOAT; break;
@@ -243,7 +240,8 @@ static int open_aaudio_stream(struct impl *impl)
     CHK(AAudioStreamBuilder_delete(impl->aaudio_builder));
 
     impl->info.rate = AAudioStream_getSampleRate(impl->aaudio_stream);
-	AAudioStream_requestStart(impl->aaudio_stream);
+	CHK(AAudioStream_requestStart(impl->aaudio_stream));
+	CHK(AAudioStream_waitForStateChange(impl->aaudio_stream, AAUDIO_STREAM_STATE_STARTING, NULL, 100 * AAUDIO_NANOS_PER_MILLISECOND));
     return 0;
 
 fail:
@@ -387,6 +385,16 @@ static void parse_audio_info(const struct pw_properties *props, struct spa_audio
 		str = DEFAULT_FORMAT;
     // TODO: enforce Android compatible format
 	info->format = format_from_name(str, strlen(str));
+	switch (info->format) {
+		case SPA_AUDIO_FORMAT_S16_LE: 
+		case SPA_AUDIO_FORMAT_S24_LE: 
+		case SPA_AUDIO_FORMAT_S32_LE: 
+		case SPA_AUDIO_FORMAT_F32_LE: 
+			break;
+		default:
+            pw_log_error( "audio format not supported. fallback to SPA_AUDIO_FORMAT_S16_LE. ");
+			info->format = SPA_AUDIO_FORMAT_S16_LE;
+	}
 
 	info->rate = pw_properties_get_uint32(props, PW_KEY_AUDIO_RATE, info->rate);
 	if (info->rate == 0)
@@ -548,7 +556,6 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 
 	pw_impl_module_update_properties(module, &SPA_DICT_INIT_ARRAY(module_props));
 
-	pw_log_debug("aaudio-sink finishs init");
 	return 0;
 
 error:
