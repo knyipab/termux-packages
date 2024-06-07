@@ -12,8 +12,6 @@ TERMUX_PKG_AUTO_UPDATE=false
 TERMUX_PKG_DEPENDS="libc++, pipewire"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --enable-cxx
---without-alsa
---without-jack
 --without-oss
 --without-asihpi
 ac_cv_lib_pthread_pthread_create=yes
