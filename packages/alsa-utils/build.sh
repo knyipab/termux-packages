@@ -17,6 +17,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 
 termux_step_pre_configure() {
 	LDFLAGS+=" -llog"
-	export ACLOCAL_PATH=${TERMUX_PREFIX}/share/aclocal:$ACLOCAL_PATH
+	export ACLOCAL_PATH="${TERMUX_PREFIX}/share/aclocal:$ACLOCAL_PATH"
 	autoreconf -fi
 }
