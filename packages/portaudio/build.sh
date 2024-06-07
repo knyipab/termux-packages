@@ -18,3 +18,7 @@ ac_cv_lib_pthread_pthread_create=yes
 ac_cv_lib_rt_clock_gettime=yes
 "
 TERMUX_MAKE_PROCESSES=1
+
+termux_step_pre_configure() {
+	CFLAGS+=" -I$TERMUX_PREFIX/include"
+}
