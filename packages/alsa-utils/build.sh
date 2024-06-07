@@ -13,7 +13,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-asound-state-dir=$TERMUX_PREFIX/var/lib/alsa
 --disable-bat
 --disable-rst2man
---disable-alsaconf
 "
 
 termux_step_pre_configure() {
