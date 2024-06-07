@@ -9,9 +9,10 @@ TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="ncurses"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-udev-rules-dir=$TERMUX_PREFIX/lib/udev/rules.d
--DAM_PATH_ALSA=$TERMUX_PREFIX/var/lib/alsa
---disable-bat --disable-rst2man
-
+--with-asound-state-dir=$TERMUX_PREFIX/var/lib/alsa
+--disable-bat
+--disable-rst2man
+--disable-alsaconf
 "
 
 termux_step_pre_configure() {
