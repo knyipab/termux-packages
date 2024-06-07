@@ -10,5 +10,6 @@ TERMUX_PKG_DEPENDS="ncurses"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-udev-rules-dir=$TERMUX_PREFIX/lib/udev/rules.d --with-asound-state-dir=$TERMUX_PREFIX/var/lib/alsa --disable-bat --disable-rst2man"
 
 termux_step_pre_configure() {
-    LDFLAGS+=" -llog"
+	autoreconf -fi
+	LDFLAGS+=" -llog"
 }
