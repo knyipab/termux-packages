@@ -44,6 +44,7 @@ termux_step_pre_configure() {
 	fi
 	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules
 	cp $TERMUX_PKG_BUILDER_DIR/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules
+	cp $TERMUX_PKG_BUILDER_DIR/module-oboe-sink.c $TERMUX_PKG_SRCDIR/src/modules
 	cp $TERMUX_PKG_BUILDER_DIR/module-protocol-pulse/module-aaudio-source.c $TERMUX_PKG_SRCDIR/src/modules/module-protocol-pulse/modules
 	cp $TERMUX_PKG_BUILDER_DIR/module-protocol-pulse/module-aaudio-sink.c $TERMUX_PKG_SRCDIR/src/modules/module-protocol-pulse/modules
 	

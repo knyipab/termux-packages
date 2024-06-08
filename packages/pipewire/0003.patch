@@ -59,7 +59,7 @@ index 0d54cf9..06a5678 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..72a12cf 100644
+index 922a384..9dc4953 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
 @@ -4,6 +4,9 @@ subdir('spa')
@@ -86,7 +86,7 @@ index 922a384..72a12cf 100644
 +    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
 +  )
 +
-+  pipewire_module_aaudio_sink = shared_library('pipewire-module-aaudio-source',
++  pipewire_module_aaudio_source = shared_library('pipewire-module-aaudio-source',
 +    [ 'module-aaudio-source.c' ],
 +    include_directories : [configinc],
 +    install : true,
@@ -96,7 +96,7 @@ index 922a384..72a12cf 100644
 +  )
 +
 +  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-source',
-+    [ 'module-oboe-source.cpp' ],
++    [ 'module-oboe-sink.cpp' ],
 +    include_directories : [configinc],
 +    install : true,
 +    install_dir : modules_install_dir,
@@ -108,12 +108,13 @@ index 922a384..72a12cf 100644
  pipewire_module_access_deps = [spa_dep, mathlib, dl_lib, pipewire_dep]
  if flatpak_support
    pipewire_module_access_deps += glib2_dep
-@@ -376,6 +408,8 @@ pipewire_module_protocol_pulse_sources = [
+@@ -376,6 +408,9 @@ pipewire_module_protocol_pulse_sources = [
    'module-protocol-pulse/stream.c',
    'module-protocol-pulse/utils.c',
    'module-protocol-pulse/volume.c',
 +  'module-protocol-pulse/modules/module-aaudio-sink.c',
 +  'module-protocol-pulse/modules/module-aaudio-source.c',
++  'module-protocol-pulse/modules/module-oboe-sink.c',
    'module-protocol-pulse/modules/module-alsa-sink.c',
    'module-protocol-pulse/modules/module-alsa-source.c',
    'module-protocol-pulse/modules/module-always-sink.c',
