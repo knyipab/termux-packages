@@ -94,7 +94,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
 			"( node.name=<name of the nodes> ) "					\
 			"( node.description=<description of the nodes> ) "			\
-			"( audio.format=<format, default:" DEFAULT_FORMAT "> ) "			\
+			"( audio.format=<format, S16LE or F32LE, default:" DEFAULT_FORMAT "> ) "			\
 			"( audio.rate=<sample rate, default: " SPA_STRINGIFY(DEFAULT_RATE) "> ) "			\
 			"( audio.channels=<number of channels, default:" SPA_STRINGIFY(DEFAULT_CHANNELS) "> ) "	\
 			"( audio.position=<channel map, default:" DEFAULT_POSITION "> ) "		\
@@ -144,7 +144,6 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
-	pw_log_debug("oboe state changed to %d", state);
 	struct impl *impl = (struct impl *)d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
@@ -169,7 +168,7 @@ static void playback_stream_process(void *d)
 	struct pw_buffer *buf;
 	struct spa_data *bd;
 	void *data;
-	uint32_t offs, size, i;
+	uint32_t offs, size;
     oboe::Result returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
@@ -177,21 +176,33 @@ static void playback_stream_process(void *d)
 		return;
 	}
 
-	for (i = 0; i < buf->buffer->n_datas; i++) {
-		bd = &buf->buffer->datas[i];
+	bd = &buf->buffer->datas[0];
 
-		offs = SPA_MIN(bd->chunk->offset, bd->maxsize);
-		size = SPA_MIN(bd->maxsize - offs, bd->chunk->size);
+	offs = SPA_MIN(bd->chunk->offset, bd->maxsize);
+	size = SPA_MIN(bd->chunk->size, bd->maxsize - offs);
+	data = SPA_PTROFF(bd->data, offs, void);
 
-        spa_zero(data);
-	    data = SPA_PTROFF(bd->data, offs, void);
+	// // backup
+	// for (i = 0; i < buf->buffer->n_datas; i++) {
+	// 	bd = &buf->buffer->datas[i];
+
+	// 	offs = SPA_MIN(bd->chunk->offset, bd->maxsize);
+	// 	size = SPA_MIN(bd->maxsize - offs, bd->chunk->size);
+
+    //     spa_zero(data);
+	//     data = SPA_PTROFF(bd->data, offs, void);
         
-		// TODO: investigate timeout
-        if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, impl->stream_write_timeout)) != oboe::Result::OK)
-            pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
-		if (returnCode == oboe::Result::ErrorDisconnected)
-			open_oboe_stream(impl);
-	}
+	// 	// TODO: investigate timeout
+    //     if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, impl->stream_write_timeout)) != oboe::Result::OK)
+    //         pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
+	// 	if (returnCode == oboe::Result::ErrorDisconnected)
+	// 		open_oboe_stream(impl);
+	// }
+	if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, impl->stream_write_timeout)) != oboe::Result::OK)
+		pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
+	if (returnCode == oboe::Result::ErrorDisconnected)
+		open_oboe_stream(impl);
+	
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
 
 	pw_stream_queue_buffer(impl->stream, buf);
