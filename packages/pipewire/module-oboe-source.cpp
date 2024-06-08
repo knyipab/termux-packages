@@ -173,7 +173,7 @@ static void capture_stream_process(void *d)
 	struct pw_buffer *buf;
 	struct spa_data *bd;
 	void *data;
-	uint32_t size, i;
+	uint32_t size, numFrames, i;
     oboe::Result returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
@@ -187,8 +187,11 @@ static void capture_stream_process(void *d)
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-		if ((returnCode = impl->oboe_stream->read(data, size / impl->frame_size, impl->stream_read_timeout)) != oboe::Result::OK)
+		if ((returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout)) != oboe::Result::OK)
 			pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
+		else 
+			size = returnCode.value() * impl->frame_size;
+
 		if (returnCode == oboe::Result::ErrorDisconnected)
 			open_oboe_stream(impl);
 		pw_log_info("fill buffer data %p with up to %u bytes", data, size);
