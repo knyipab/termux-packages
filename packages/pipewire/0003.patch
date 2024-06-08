@@ -38,7 +38,7 @@ index 5a17d00..0722dd3 100644
  	spa_thread_utils_join(&c->context.thread_utils, (struct spa_thread*)thread, &status);
  	pw_log_debug("stopped thread %p", (void *) thread);
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
-index 0d54cf9..74b8711 100644
+index 0d54cf9..9d7759e 100644
 --- a/src/daemon/pipewire-pulse.conf.in
 +++ b/src/daemon/pipewire-pulse.conf.in
 @@ -61,7 +61,8 @@ context.exec = [
@@ -46,8 +46,8 @@ index 0d54cf9..74b8711 100644
  #      ( flags = [ nofail ] )
  pulse.cmd = [
 -    { cmd = "load-module" args = "module-always-sink" flags = [ ] }
-+    { cmd = "load-module" args = "module-oboe-sink" flags = [ ] }
-+    { cmd = "load-module" args = "module-oboe-source" flags = [ ] }
++    { cmd = "load-module" args = "module-oboe-sink stream_write_timeout=0" flags = [ ] }
++    { cmd = "load-module" args = "module-oboe-source stream_read_timeout=0" flags = [ ] }
      { cmd = "load-module" args = "module-device-manager" flags = [ ] }
      { cmd = "load-module" args = "module-device-restore" flags = [ ] }
      { cmd = "load-module" args = "module-stream-restore" flags = [ ] }

@@ -75,7 +75,7 @@ static int module_oboe_sink_load(struct module *module)
 
 	fprintf(f, "{");
 	pw_properties_serialize_dict(f, &data->oboe_props->dict, 0);
-	fprintf(f, " stream.props = {");
+	fprintf(f, " \"stream.props\": {");
 	pw_properties_serialize_dict(f, &data->stream_props->dict, 0);
 	fprintf(f, " } }");
 	fclose(f);
