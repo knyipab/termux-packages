@@ -280,7 +280,7 @@ static int create_stream(struct impl *impl)
 	if ((res = pw_stream_connect(impl->stream,
 			PW_DIRECTION_INPUT,
 			PW_ID_ANY,
-			(PW_STREAM_FLAG_AUTOCONNECT |
+			static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
 			PW_STREAM_FLAG_MAP_BUFFERS |
 			PW_STREAM_FLAG_RT_PROCESS),
 			params, n_params)) < 0)
@@ -388,7 +388,7 @@ static void parse_audio_info(const struct pw_properties *props, struct spa_audio
 	if ((str = pw_properties_get(props, PW_KEY_AUDIO_FORMAT)) == NULL)
 		str = DEFAULT_FORMAT;
     // TODO: enforce Android compatible format
-	info->format = (format_from_name(str, strlen(str)));
+	info->format = static_cast<spa_audio_format>(format_from_name(str, strlen(str)));
 	switch (info->format) {
 		case SPA_AUDIO_FORMAT_S16_LE: 
 		case SPA_AUDIO_FORMAT_S24_LE: 
@@ -530,7 +530,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 		goto error;
 	}
 
-	impl->core = pw_context_get_object(impl->context, PW_TYPE_INTERFACE_Core);
+	impl->core = (struct pw_core *)pw_context_get_object(impl->context, PW_TYPE_INTERFACE_Core);
 	if (impl->core == NULL) {
 		str = pw_properties_get(props, PW_KEY_REMOTE_NAME);
 		impl->core = pw_context_connect(impl->context,
@@ -558,7 +558,8 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 
 	pw_impl_module_add_listener(module, &impl->module_listener, &module_events, impl);
 
-	pw_impl_module_update_properties(module, &SPA_DICT_INIT_ARRAY(module_props));
+	spa_dict temp_spa_dict = (struct spa_dict) { 0, SPA_N_ELEMENTS(module_props), (module_props) };
+	pw_impl_module_update_properties(module, &temp_spa_dict);
 
 	return 0;
 
