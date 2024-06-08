@@ -505,8 +505,10 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 		pw_properties_set(props, PW_KEY_NODE_DESCRIPTION,
 				pw_properties_get(props, PW_KEY_NODE_NAME));
 
-	if ((str = pw_properties_get(props, "stream.props")) != NULL)
+	if ((str = pw_properties_get(props, "stream.props")) != NULL) {
 		pw_properties_update_string(impl->stream_props, str, strlen(str));
+		pw_log_debug( "stream.props set by args: %s", str);
+	}
 
 	copy_props(impl, props, PW_KEY_AUDIO_RATE);
 	copy_props(impl, props, PW_KEY_AUDIO_CHANNELS);
@@ -521,11 +523,13 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	parse_audio_info(impl->stream_props, &impl->info);
 
 	impl->frame_size = calc_frame_size(&impl->info);
-	if (pw_properties_get(props, "stream.write.timeout") == NULL)
+	if (pw_properties_get(props, "stream.write.timeout") == NULL){
 		impl->stream_write_timeout = DEFAULT_STREAM_WRITE_TIMEOUT;
-	else
+		pw_log_debug( "stream write timeout set to default: %d", impl->stream_write_timeout);
+	} else {
 		impl->stream_write_timeout = pw_properties_get_uint64(impl->stream_props, "stream.write.timeout", impl->stream_write_timeout);
-	pw_log_debug( "stream write timeout set to %d", impl->stream_write_timeout);
+		pw_log_debug( "stream write timeout set by args: %d", impl->stream_write_timeout);
+	}
 	if (impl->frame_size == 0) {
 		res = -EINVAL;
 		pw_log_error( "can't parse audio format");
