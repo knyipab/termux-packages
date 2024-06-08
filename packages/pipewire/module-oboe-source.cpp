@@ -174,7 +174,7 @@ static void capture_stream_process(void *d)
 	struct spa_data *bd;
 	void *data;
 	uint32_t size, numFrames, i;
-    int32_t returnCode;
+    oboe::ResultWithValue<int32_t> returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
