@@ -90,7 +90,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 
 #define DEFAULT_FORMAT "S16LE"
 #define DEFAULT_RATE 48000
-#define DEFAULT_CHANNELS 1
+#define DEFAULT_CHANNELS 2
 #define DEFAULT_POSITION "[ FL FR ]"
 #define DEFAULT_STREAM_READ_TIMEOUT 500
 
@@ -173,29 +173,31 @@ static void capture_stream_process(void *d)
 	struct pw_buffer *buf;
 	struct spa_data *bd;
 	void *data;
-	uint32_t size;
-    oboe::Result returnCode;
+	uint32_t size, i;
+    oboe::Result returnCode,;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
 		return;
 	}
 
-	bd = &buf->buffer->datas[0];
+	for (i = 0; i < buf->buffer->n_datas; i++) {
+		bd = &buf->buffer->datas[i];
 
-	data = bd->data;
-	size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
+		data = bd->data;
+		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-	if ((returnCode = impl->oboe_stream->read(data, size / impl->frame_size, impl->stream_read_timeout)) != oboe::Result::OK)
-		pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
-	if (returnCode == oboe::Result::ErrorDisconnected)
-		open_oboe_stream(impl);
-	pw_log_info("fill buffer data %p with up to %u bytes", data, size);
+		if ((returnCode = impl->oboe_stream->read(data, size / impl->frame_size, impl->stream_read_timeout)) != oboe::Result::OK)
+			pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
+		if (returnCode == oboe::Result::ErrorDisconnected)
+			open_oboe_stream(impl);
+		pw_log_info("fill buffer data %p with up to %u bytes", data, size);
 
-	bd->chunk->size = size;
-	bd->chunk->stride = impl->frame_size;
-	bd->chunk->offset = 0;
-	buf->size = size / impl->frame_size;
+		bd->chunk->size = size;
+		bd->chunk->stride = impl->frame_size;
+		bd->chunk->offset = 0;
+		buf->size = size / impl->frame_size;
+	}
 
 	pw_stream_queue_buffer(impl->stream, buf);
 }
