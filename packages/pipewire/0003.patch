@@ -38,19 +38,20 @@ index 5a17d00..0722dd3 100644
  	spa_thread_utils_join(&c->context.thread_utils, (struct spa_thread*)thread, &status);
  	pw_log_debug("stopped thread %p", (void *) thread);
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
-index 0d54cf9..5a4b66a 100644
+index 0d54cf9..74b8711 100644
 --- a/src/daemon/pipewire-pulse.conf.in
 +++ b/src/daemon/pipewire-pulse.conf.in
-@@ -61,7 +61,7 @@ context.exec = [
+@@ -61,7 +61,8 @@ context.exec = [
  #      args = "<module-name> <module-args>"
  #      ( flags = [ nofail ] )
  pulse.cmd = [
 -    { cmd = "load-module" args = "module-always-sink" flags = [ ] }
 +    { cmd = "load-module" args = "module-oboe-sink" flags = [ ] }
++    { cmd = "load-module" args = "module-oboe-source" flags = [ ] }
      { cmd = "load-module" args = "module-device-manager" flags = [ ] }
      { cmd = "load-module" args = "module-device-restore" flags = [ ] }
      { cmd = "load-module" args = "module-stream-restore" flags = [ ] }
-@@ -90,7 +90,7 @@ pulse.properties = {
+@@ -90,7 +91,7 @@ pulse.properties = {
      server.address = [
          "unix:native"
          #"unix:/tmp/something"              # absolute paths may be used
@@ -60,20 +61,21 @@ index 0d54cf9..5a4b66a 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..dedc3ea 100644
+index 922a384..cd74b6f 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
-@@ -4,6 +4,9 @@ subdir('spa')
+@@ -4,6 +4,10 @@ subdir('spa')
  # The list of "main" source files for modules, the ones that have the
  # doxygen documentation
  module_sources = [
 +  'module-aaudio-source.c',
 +  'module-aaudio-sink.c',
 +  'module-oboe-sink.cpp',
++  'module-aaudio-sink.cpp',
    'module-access.c',
    'module-adapter.c',
    'module-avb.c',
-@@ -49,6 +52,37 @@ module_sources = [
+@@ -49,6 +53,45 @@ module_sources = [
    'module-x11-bell.c',
  ]
  
@@ -106,18 +108,27 @@ index 922a384..dedc3ea 100644
 +    install_rpath: modules_install_dir,
 +    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, liboboe_dep],
 +  )
++  pipewire_module_oboe_source = shared_library('pipewire-module-oboe-source',
++    [ 'module-oboe-source.cpp' ],
++    include_directories : [configinc],
++    install : true,
++    install_dir : modules_install_dir,
++    install_rpath: modules_install_dir,
++    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, liboboe_dep],
++  )
 +endif
 +
  pipewire_module_access_deps = [spa_dep, mathlib, dl_lib, pipewire_dep]
  if flatpak_support
    pipewire_module_access_deps += glib2_dep
-@@ -376,6 +410,9 @@ pipewire_module_protocol_pulse_sources = [
+@@ -376,6 +419,10 @@ pipewire_module_protocol_pulse_sources = [
    'module-protocol-pulse/stream.c',
    'module-protocol-pulse/utils.c',
    'module-protocol-pulse/volume.c',
 +  'module-protocol-pulse/modules/module-aaudio-sink.c',
 +  'module-protocol-pulse/modules/module-aaudio-source.c',
 +  'module-protocol-pulse/modules/module-oboe-sink.c',
++  'module-protocol-pulse/modules/module-oboe-source.c',
    'module-protocol-pulse/modules/module-alsa-sink.c',
    'module-protocol-pulse/modules/module-alsa-source.c',
    'module-protocol-pulse/modules/module-always-sink.c',

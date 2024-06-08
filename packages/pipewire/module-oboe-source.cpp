@@ -32,13 +32,14 @@ extern "C" {
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
 
-#define NANOS_PER_MILLISECOND 1000000L
-
-/** \page page_module_oboe_sink Oboe Sink
+/** \page page_module_oboe_source Oboe Source
+ *
+ * The oboe source is a good starting point for writing a custom
+ * source. We refer to the source code for more information.
  *
  * ## Module Name
  *
- * `libpipewire-module-oboe-sink`
+ * `libpipewire-module-oboe-source`
  *
  * ## Module Options
  *
@@ -63,14 +64,14 @@ extern "C" {
  * - \ref PW_KEY_NODE_VIRTUAL
  * - \ref PW_KEY_MEDIA_CLASS
  *
- * ## Configuration
+ * ## Oboe configuration
  *
  *\code{.unparsed}
  * context.modules = [
- * {   name = libpipewire-module-oboe-sink
+ * {   name = libpipewire-module-oboe-source
  *     args = {
- *         node.name = "oboe_sink"
- *         node.description = "My Oboe Sink"
+ *         node.name = "oboe_source"
+ *         node.description = "My Oboe Source"
  *         stream.props = {
  *             audio.position = [ FL FR ]
  *         }
@@ -80,7 +81,7 @@ extern "C" {
  *\endcode
  */
 
-#define NAME "oboe-sink"
+#define NAME "oboe-source"
 
 PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define PW_LOG_TOPIC_DEFAULT mod_topic
@@ -89,7 +90,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define DEFAULT_RATE 48000
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_POSITION "[ FL FR ]"
-#define DEFAULT_STREAM_WRITE_TIMEOUT 500
+#define DEFAULT_STREAM_READ_TIMEOUT 500
 
 #define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
 			"( node.name=<name of the nodes> ) "					\
@@ -98,8 +99,9 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 			"( audio.rate=<sample rate, default: " SPA_STRINGIFY(DEFAULT_RATE) "> ) "			\
 			"( audio.channels=<number of channels, default:" SPA_STRINGIFY(DEFAULT_CHANNELS) "> ) "	\
 			"( audio.position=<channel map, default:" DEFAULT_POSITION "> ) "		\
-			"( stream.write.timeout=<timeout for wrtiing into stream in nanosecs, default:" SPA_STRINGIFY(DEFAULT_STREAM_WRITE_TIMEOUT) "> ) "	\
+			"( stream.read.timeout=<timeout for wrtiing into stream in nanosecs, default:" SPA_STRINGIFY(DEFAULT_STREAM_READ_TIMEOUT) "> ) "	\
 			"( stream.props=<properties> ) "
+
 
 
 static const struct spa_dict_item module_props[] = {
@@ -127,10 +129,11 @@ struct impl {
 	struct spa_hook stream_listener;
 	struct spa_audio_info_raw info;
 	uint32_t frame_size;
-	int64_t stream_write_timeout;
+	int64_t stream_read_timeout;
 
 	unsigned int do_disconnect:1;
-
+	unsigned int unloading:1;
+	
     std::shared_ptr<oboe::AudioStream> oboe_stream;
 };
 
@@ -162,47 +165,44 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 
 static int open_oboe_stream(struct impl *impl);
 
-static void playback_stream_process(void *d)
+static void capture_stream_process(void *d)
 {
 	struct impl *impl = (struct impl *)d;
 	struct pw_buffer *buf;
 	struct spa_data *bd;
 	void *data;
-	uint32_t offs, size, i;
-    oboe::Result returnCode;
+	uint32_t size;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
 		return;
 	}
 
-	for (i = 0; i < buf->buffer->n_datas; i++) {
-		bd = &buf->buffer->datas[i];
+	bd = &buf->buffer->datas[0];
 
-		offs = SPA_MIN(bd->chunk->offset, bd->maxsize);
-		size = SPA_MIN(bd->maxsize - offs, bd->chunk->size);
+	data = bd->data;
+	size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-        spa_zero(data);
-	    data = SPA_PTROFF(bd->data, offs, void);
-        
-		// TODO: investigate timeout
-        if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, impl->stream_write_timeout)) != oboe::Result::OK)
-            pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
-		if (returnCode == oboe::Result::ErrorDisconnected)
-			open_oboe_stream(impl);
-	}
-	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
+	if ((returnCode = impl->oboe_stream->read(data, size / impl->frame_size, impl->stream_read_timeout)) != oboe::Result::OK)
+		pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
+	if (returnCode == oboe::Result::ErrorDisconnected)
+		open_oboe_stream(impl);
+	pw_log_info("fill buffer data %p with up to %u bytes", data, size);
+
+	bd->chunk->size = size;
+	bd->chunk->stride = impl->frame_size;
+	bd->chunk->offset = 0;
+	buf->size = size / impl->frame_size;
 
 	pw_stream_queue_buffer(impl->stream, buf);
 }
 
-static const struct pw_stream_events playback_stream_events = {
+static const struct pw_stream_events capture_stream_events = {
 	PW_VERSION_STREAM_EVENTS,
 	.destroy = stream_destroy,
 	.state_changed = stream_state_changed,
-	.process = playback_stream_process
+	.process = capture_stream_process
 };
-
 
 // static void core_destroy(void *d);
 
@@ -231,7 +231,7 @@ static int open_oboe_stream(struct impl *impl)
             goto fail;
     }
 
-	CHK(builder.setDirection(oboe::Direction::Output)
+	CHK(builder.setDirection(oboe::Direction::Input)
 				->setSharingMode(oboe::SharingMode::Shared)
                 ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
                 ->setChannelCount(impl->info.channels)
@@ -252,7 +252,6 @@ fail:
     return -1;
 }
 
-
 static int create_stream(struct impl *impl)
 {
 	int res;
@@ -262,7 +261,7 @@ static int create_stream(struct impl *impl)
 	struct spa_pod_builder b;
 
     open_oboe_stream(impl);
-	impl->stream = pw_stream_new(impl->core, "oboe sink", impl->stream_props);
+	impl->stream = pw_stream_new(impl->core, "oboe source", impl->stream_props);
 	impl->stream_props = NULL;
 
 	if (impl->stream == NULL)
@@ -270,7 +269,7 @@ static int create_stream(struct impl *impl)
 
 	pw_stream_add_listener(impl->stream,
 			&impl->stream_listener,
-			&playback_stream_events, impl);
+			&capture_stream_events, impl);
 
 	n_params = 0;
 	spa_pod_builder_init(&b, buffer, sizeof(buffer));
@@ -278,7 +277,7 @@ static int create_stream(struct impl *impl)
 			SPA_PARAM_EnumFormat, &impl->info);
 
 	if ((res = pw_stream_connect(impl->stream,
-			PW_DIRECTION_INPUT,
+			PW_DIRECTION_OUTPUT,
 			PW_ID_ANY,
 			static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
 			PW_STREAM_FLAG_MAP_BUFFERS |
@@ -336,6 +335,7 @@ static void impl_destroy(struct impl *impl)
 static void module_destroy(void *data)
 {
 	struct impl *impl = (struct impl *)data;
+	impl->unloading = true;
 	spa_hook_remove(&impl->module_listener);
 	impl_destroy(impl);
 }
@@ -498,10 +498,10 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 		pw_properties_set(props, PW_KEY_NODE_VIRTUAL, "true");
 
 	if (pw_properties_get(props, PW_KEY_MEDIA_CLASS) == NULL)
-		pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Sink");
+		pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Source");
 
 	if (pw_properties_get(props, PW_KEY_NODE_NAME) == NULL)
-		pw_properties_setf(props, PW_KEY_NODE_NAME, "oboe-sink-%u-%u", pid, id);
+		pw_properties_setf(props, PW_KEY_NODE_NAME, "oboe-source-%u-%u", pid, id);
 	if (pw_properties_get(props, PW_KEY_NODE_DESCRIPTION) == NULL)
 		pw_properties_set(props, PW_KEY_NODE_DESCRIPTION,
 				pw_properties_get(props, PW_KEY_NODE_NAME));
@@ -522,9 +522,9 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	parse_audio_info(impl->stream_props, &impl->info);
 
 	impl->frame_size = calc_frame_size(&impl->info);
-	impl->stream_write_timeout = pw_properties_get_uint64(impl->stream_props, "stream.write.timeout", impl->stream_write_timeout);
-	if (impl->stream_write_timeout == 0)
-		impl->stream_write_timeout = DEFAULT_STREAM_WRITE_TIMEOUT;
+	impl->stream_read_timeout = pw_properties_get_uint64(impl->stream_props, "stream.read.timeout", impl->stream_read_timeout);
+	if (impl->stream_read_timeout == 0)
+		impl->stream_read_timeout = DEFAULT_STREAM_READ_TIMEOUT;
 	if (impl->frame_size == 0) {
 		res = -EINVAL;
 		pw_log_error( "can't parse audio format");
@@ -568,6 +568,5 @@ error:
 	impl_destroy(impl);
 	return res;
 }
-
 
 }

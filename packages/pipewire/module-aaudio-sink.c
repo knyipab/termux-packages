@@ -142,7 +142,6 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
-	pw_log_debug("aaudio state changed to %d", state);
 	struct impl *impl = d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
@@ -294,9 +293,10 @@ static void core_error(void *data, uint32_t id, int seq, int res, const char *me
 	pw_log_error("error id:%u seq:%d res:%d (%s): %s",
 			id, seq, res, spa_strerror(res), message);
 
-	if (id == PW_ID_CORE && res == -EPIPE)
+	if (id == PW_ID_CORE && res == -EPIPE) {
         AAudioStream_close(impl->aaudio_stream);
 		pw_impl_module_schedule_destroy(impl->module);
+	}
 }
 
 static const struct pw_core_events core_events = {
@@ -456,7 +456,6 @@ static void copy_props(struct impl *impl, struct pw_properties *props, const cha
 SPA_EXPORT
 int pipewire__module_init(struct pw_impl_module *module, const char *args)
 {
-	pw_log_debug("aaudio sink init");
 	struct pw_context *context = pw_impl_module_get_context(module);
 	struct pw_properties *props = NULL;
 	uint32_t id = pw_global_get_id(pw_impl_module_get_global(module));

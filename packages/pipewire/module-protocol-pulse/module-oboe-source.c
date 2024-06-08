@@ -1,5 +1,6 @@
 /* PipeWire */
 /* SPDX-FileCopyrightText: Copyright © 2021 Wim Taymans <wim.taymans@gmail.com> */
+/* SPDX-FileCopyrightText: Copyright © 2021 Sanchayan Maity <sanchayan@asymptotic.io> */
 /* SPDX-License-Identifier: MIT */
 
 #include <spa/utils/hook.h>
@@ -8,11 +9,11 @@
 #include "../defs.h"
 #include "../module.h"
 
-/** \page page_pulse_module_oboe_sink Oboe Sink
+/** \page page_pulse_module_oboe_source Oboe Source
  *
  * ## Module Name
  *
- * `module-oboe-sink`
+ * `module-oboe-source`
  *
  * ## Module Options
  *
@@ -20,7 +21,7 @@
  *
  * ## See Also
  *
- * \ref page_module_oboe_sink "libpipewire-module-oboe-sink"
+ * \ref page_module_oboe_source "libpipewire-module-oboe-source"
  */
 
 static const char *const pulse_module_options =
@@ -31,16 +32,16 @@ static const char *const pulse_module_options =
 	"audio_rate=<sample rate> "
 	"audio_channels=<number of channels> "
 	"audio_position=<channel map> "
-	"stream_write_timeout=<number of nanosecs> "
+	"stream_read_timeout=<number of nanosecs> "
 	"stream_props=<properties> "
 	;
 
-#define NAME "oboe-sink"
+#define NAME "oboe-source"
 
 PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define PW_LOG_TOPIC_DEFAULT mod_topic
 
-struct module_oboe_sink_data {
+struct module_oboe_source_data {
 	struct module *module;
 
 	struct spa_hook mod_listener;
@@ -52,7 +53,7 @@ struct module_oboe_sink_data {
 
 static void module_destroy(void *data)
 {
-	struct module_oboe_sink_data *d = data;
+	struct module_oboe_source_data *d = data;
 	spa_hook_remove(&d->mod_listener);
 	d->mod = NULL;
 	module_schedule_unload(d->module);
@@ -63,9 +64,9 @@ static const struct pw_impl_module_events module_events = {
 	.destroy = module_destroy
 };
 
-static int module_oboe_sink_load(struct module *module)
+static int module_oboe_source_load(struct module *module)
 {
-	struct module_oboe_sink_data *data = module->user_data;
+	struct module_oboe_source_data *data = module->user_data;
 	FILE *f;
 	char *args;
 	size_t size;
@@ -81,7 +82,7 @@ static int module_oboe_sink_load(struct module *module)
 	fclose(f);
 
 	data->mod = pw_context_load_module(module->impl->context,
-			"libpipewire-module-oboe-sink",
+			"libpipewire-module-oboe-source",
 			args, NULL);
 
 	free(args);
@@ -96,9 +97,9 @@ static int module_oboe_sink_load(struct module *module)
 	return 0;
 }
 
-static int module_oboe_sink_unload(struct module *module)
+static int module_oboe_source_unload(struct module *module)
 {
-	struct module_oboe_sink_data *d = module->user_data;
+	struct module_oboe_source_data *d = module->user_data;
 
 	if (d->mod) {
 		spa_hook_remove(&d->mod_listener);
@@ -124,16 +125,17 @@ static const char* const valid_args[] = {
 	"stream_props",
 	NULL
 };
-static const struct spa_dict_item module_oboe_sink_info[] = {
-	{ PW_KEY_MODULE_AUTHOR, "Ronald Y" },
-	{ PW_KEY_MODULE_DESCRIPTION, "Oboe (Andoird) audio sink" },
+
+static const struct spa_dict_item module_oboe_source_info[] = {
+	{ PW_KEY_MODULE_AUTHOR, "Sanchayan Maity <sanchayan@asymptotic.io>" },
+	{ PW_KEY_MODULE_DESCRIPTION, "oboe source" },
 	{ PW_KEY_MODULE_USAGE, pulse_module_options },
 	{ PW_KEY_MODULE_VERSION, PACKAGE_VERSION },
 };
 
-static int module_oboe_sink_prepare(struct module * const module)
+static int module_oboe_source_prepare(struct module * const module)
 {
-	struct module_oboe_sink_data * const d = module->user_data;
+	struct module_oboe_source_data * const d = module->user_data;
 	struct pw_properties * const props = module->props;
 	struct pw_properties *stream_props = NULL, *oboe_props = NULL;
 	const char *str;
@@ -149,31 +151,31 @@ static int module_oboe_sink_prepare(struct module * const module)
 	}
 
 	if ((str = pw_properties_get(props, "node_latency")) != NULL) {
-		pw_properties_set(oboe_props, "node.latency", str);
+		pw_properties_set(aaudio_props, "node.latency", str);
 		pw_properties_set(props, "node_latency", NULL);
 	}
 	if ((str = pw_properties_get(props, "node_name")) != NULL) {
-		pw_properties_set(oboe_props, "node.name", str);
+		pw_properties_set(aaudio_props, "node.name", str);
 		pw_properties_set(props, "node_name", NULL);
 	}
 	if ((str = pw_properties_get(props, "node_description")) != NULL) {
-		pw_properties_set(oboe_props, "node.description", str);
+		pw_properties_set(aaudio_props, "node.description", str);
 		pw_properties_set(props, "node_description", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_format")) != NULL) {
-		pw_properties_set(oboe_props, "audio.format", str);
+		pw_properties_set(aaudio_props, "audio.format", str);
 		pw_properties_set(props, "audio_format", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_rate")) != NULL) {
-		pw_properties_set(oboe_props, "audio.rate", str);
+		pw_properties_set(aaudio_props, "audio.rate", str);
 		pw_properties_set(props, "audio_rate", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_channels")) != NULL) {
-		pw_properties_set(oboe_props, "audio.channels", str);
+		pw_properties_set(aaudio_props, "audio.channels", str);
 		pw_properties_set(props, "audio_channels", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_position")) != NULL) {
-		pw_properties_set(oboe_props, "audio.position", str);
+		pw_properties_set(aaudio_props, "audio.position", str);
 		pw_properties_set(props, "audio_position", NULL);
 	}
 	if ((str = pw_properties_get(props, "stream_write_timeout")) != NULL) {
@@ -187,7 +189,7 @@ static int module_oboe_sink_prepare(struct module * const module)
 
 	d->module = module;
 	d->stream_props = stream_props;
-	d->oboe_props = oboe_props;
+	d->aaudio_props = aaudio_props;
 
 	return 0;
 out:
@@ -197,12 +199,12 @@ out:
 	return res;
 }
 
-DEFINE_MODULE_INFO(module_oboe_sink) = {
-	.name = "module-oboe-sink",
+DEFINE_MODULE_INFO(module_oboe_source) = {
+	.name = "module-oboe-source",
 	.valid_args = valid_args,
-	.prepare = module_oboe_sink_prepare,
-	.load = module_oboe_sink_load,
-	.unload = module_oboe_sink_unload,
-	.properties = &SPA_DICT_INIT_ARRAY(module_oboe_sink_info),
-	.data_size = sizeof(struct module_oboe_sink_data),
+	.prepare = module_oboe_source_prepare,
+	.load = module_oboe_source_load,
+	.unload = module_oboe_source_unload,
+	.properties = &SPA_DICT_INIT_ARRAY(module_oboe_source_info),
+	.data_size = sizeof(struct module_oboe_source_data),
 };
