@@ -1,14 +1,18 @@
 diff --git a/meson.build b/meson.build
-index cda6011..5fde942 100644
+index cda6011..4d423b7 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -407,6 +407,11 @@ else
+@@ -407,6 +407,15 @@ else
    summary({'WebRTC Echo Canceling < 1.0': webrtc_dep.found()}, bool_yn: true, section: 'Misc dependencies')
  endif
  
-+# On Android, AAudio is required
++# On Android, AAudio and Oboe is required
 +libaaudio_dep = (host_machine.system() == 'android'
 +    ? cc.find_library('aaudio', required : true)
++    : dependency('', required: false))
++
++liboboe_dep = (host_machine.system() == 'android'
++    ? cc.find_library('oboe', required : true)
 +    : dependency('', required: false))
 +
  # On FreeBSD and MidnightBSD, epoll-shim library is required for eventfd() and timerfd()
@@ -56,7 +60,7 @@ index 0d54cf9..5a4b66a 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..d8ecf67 100644
+index 922a384..dedc3ea 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
 @@ -4,6 +4,9 @@ subdir('spa')
@@ -69,7 +73,7 @@ index 922a384..d8ecf67 100644
    'module-access.c',
    'module-adapter.c',
    'module-avb.c',
-@@ -49,6 +52,35 @@ module_sources = [
+@@ -49,6 +52,37 @@ module_sources = [
    'module-x11-bell.c',
  ]
  
@@ -91,21 +95,23 @@ index 922a384..d8ecf67 100644
 +    install_rpath: modules_install_dir,
 +    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
 +  )
++endif
 +
++if liboboe_dep.found()
 +  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-sink',
 +    [ 'module-oboe-sink.cpp' ],
 +    include_directories : [configinc],
 +    install : true,
 +    install_dir : modules_install_dir,
 +    install_rpath: modules_install_dir,
-+    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
++    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, liboboe_dep],
 +  )
 +endif
 +
  pipewire_module_access_deps = [spa_dep, mathlib, dl_lib, pipewire_dep]
  if flatpak_support
    pipewire_module_access_deps += glib2_dep
-@@ -376,6 +408,9 @@ pipewire_module_protocol_pulse_sources = [
+@@ -376,6 +410,9 @@ pipewire_module_protocol_pulse_sources = [
    'module-protocol-pulse/stream.c',
    'module-protocol-pulse/utils.c',
    'module-protocol-pulse/volume.c',

@@ -30,17 +30,14 @@ extern "C" {
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
 
-#include <android/versioning.h>
-#undef __INTRODUCED_IN
-#define __INTRODUCED_IN(api_level)
-#include <aaudio/AAudio.h>
-#define AAUDIO_NANOS_PER_MILLISECOND 1000000L
+#include <oboe/Oboe.h>
+#define NANOS_PER_MILLISECOND 1000000L
 
-/** \page page_module_aaudio_sink AAudio Sink
+/** \page page_module_oboe_sink Oboe Sink
  *
  * ## Module Name
  *
- * `libpipewire-module-aaudio-sink`
+ * `libpipewire-module-oboe-sink`
  *
  * ## Module Options
  *
@@ -69,10 +66,10 @@ extern "C" {
  *
  *\code{.unparsed}
  * context.modules = [
- * {   name = libpipewire-module-aaudio-sink
+ * {   name = libpipewire-module-oboe-sink
  *     args = {
- *         node.name = "aaudio_sink"
- *         node.description = "My AAudio Sink"
+ *         node.name = "oboe_sink"
+ *         node.description = "My Oboe Sink"
  *         stream.props = {
  *             audio.position = [ FL FR ]
  *         }
@@ -82,7 +79,7 @@ extern "C" {
  *\endcode
  */
 
-#define NAME "aaudio-sink"
+#define NAME "oboe-sink"
 
 PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define PW_LOG_TOPIC_DEFAULT mod_topic
@@ -104,7 +101,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 
 static const struct spa_dict_item module_props[] = {
 	{ PW_KEY_MODULE_AUTHOR, "Ronald Y" },
-	{ PW_KEY_MODULE_DESCRIPTION, "AAudio (Andoird) audio sink" },
+	{ PW_KEY_MODULE_DESCRIPTION, "Oboe (Andoird) audio sink" },
 	{ PW_KEY_MODULE_USAGE, MODULE_USAGE },
 	{ PW_KEY_MODULE_VERSION, PACKAGE_VERSION },
 };
@@ -130,8 +127,7 @@ struct impl {
 
 	unsigned int do_disconnect:1;
 
-    AAudioStreamBuilder *aaudio_builder;
-    AAudioStream *aaudio_stream;
+    std::shared_ptr<oboe::AudioStream> oboe_stream;
 };
 
 static void stream_destroy(void *d)
@@ -144,13 +140,13 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
-	pw_log_debug("aaudio state changed to %d", state);
+	pw_log_debug("oboe state changed to %d", state);
 	struct impl *impl = (struct impl *)d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
 	case PW_STREAM_STATE_UNCONNECTED:
 		pw_log_debug("destroy triggered by stream state changed, pw_stream_state = %d", state);
-        AAudioStream_close(impl->aaudio_stream);
+        impl->oboe_stream->close();
 		pw_impl_module_schedule_destroy(impl->module);
 		break;
 	case PW_STREAM_STATE_PAUSED:
@@ -168,7 +164,7 @@ static void playback_stream_process(void *d)
 	struct spa_data *bd;
 	void *data;
 	uint32_t offs, size, i;
-    aaudio_result_t returnCode;
+    Result returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
@@ -185,8 +181,8 @@ static void playback_stream_process(void *d)
 	    data = SPA_PTROFF(bd->data, offs, void);
         
 		// TODO: investigate timeout
-        if (returnCode = AAudioStream_write(impl->aaudio_stream, data, size / impl->frame_size, 200) < 0)
-            pw_log_error("AAudioStream_write error: %s", AAudio_convertResultToText(returnCode));
+        if (returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200) < 0)
+            pw_log_error("Oboe stream write() error: %s", oboe::convertResultToText(returnCode));
 	}
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
 
@@ -203,49 +199,45 @@ static const struct pw_stream_events playback_stream_events = {
 
 static void core_destroy(void *d);
 
-static void error_callback(AAudioStream *stream, void *impl, aaudio_result_t error) {
-    pw_log_debug("AAudio error: %d", error);
-    core_destroy(impl);
-}
+// static void error_callback(std::shared_ptr<oboe::AudioStream> stream, void *impl, Result error) {
+//     pw_log_debug("Oboe error: %d", error);
+//     core_destroy(impl);
+// }
 
 #define CHK(stmt) { \
-    aaudio_result_t res = stmt; \
-    if (res != AAUDIO_OK) { \
-        pw_log_error("AAudio error %s at %s:%d\n", AAudio_convertResultToText(res), __FILE__, __LINE__); \
+    Result res = stmt; \
+    if (res != OK) { \
+        pw_log_error("Oboe error %s at %s:%d\n", oboe::convertResultToText(res), __FILE__, __LINE__); \
         goto fail; \
     } \
 }
 
-static int open_aaudio_stream(struct impl *impl)
+static int open_oboe_stream(struct impl *impl)
 {
-    aaudio_format_t format;
-
-    CHK(AAudio_createStreamBuilder(&impl->aaudio_builder));
-
-    AAudioStreamBuilder_setDirection(impl->aaudio_builder, AAUDIO_DIRECTION_OUTPUT);
-    
-    AAudioStreamBuilder_setPerformanceMode(impl->aaudio_builder, AAUDIO_PERFORMANCE_MODE_NONE);
-    AAudioStreamBuilder_setErrorCallback(impl->aaudio_builder, error_callback, impl);
-
+    oboe::AudioFormat format;
+	oboe::AudioStreamBuilder builder;
     switch (impl->info.format) {
-        case SPA_AUDIO_FORMAT_S16_LE: format = AAUDIO_FORMAT_PCM_I16; break;
-        case SPA_AUDIO_FORMAT_S24_LE: format = AAUDIO_FORMAT_PCM_I24_PACKED; break;
-        case SPA_AUDIO_FORMAT_S32_LE: format = AAUDIO_FORMAT_PCM_I32; break;
-        case SPA_AUDIO_FORMAT_F32_LE: format = AAUDIO_FORMAT_PCM_FLOAT; break;
+        case SPA_AUDIO_FORMAT_S16_LE: format = oboe::AudioFormat::I16; break;
+        case SPA_AUDIO_FORMAT_F32_LE: format = oboe::AudioFormat::Float; break;
         default: 
             pw_log_error( "audio format not supported. ");
             goto fail;
     }
-    AAudioStreamBuilder_setFormat(impl->aaudio_builder, format);
-    AAudioStreamBuilder_setSampleRate(impl->aaudio_builder, impl->info.rate);
-    AAudioStreamBuilder_setChannelCount(impl->aaudio_builder, impl->info.channels);
 
-    CHK(AAudioStreamBuilder_openStream(impl->aaudio_builder, &impl->aaudio_stream));
-    CHK(AAudioStreamBuilder_delete(impl->aaudio_builder));
+	CHK(builder.setDirection(oboe::Direction::Output)
+				->setSharingMode(oboe::SharingMode::Shared)
+                ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
+                ->setChannelCount(impl->info.channels)
+                ->setSampleRate(impl->info.rate)
+				->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Medium)
+                ->setFormat(oboe::AudioFormat::Float)
+				// ->setErrorCallback(error_callback)
+                ->openStream(impl->oboe_stream));
 
-    impl->info.rate = AAudioStream_getSampleRate(impl->aaudio_stream);
-	CHK(AAudioStream_requestStart(impl->aaudio_stream));
-	CHK(AAudioStream_waitForStateChange(impl->aaudio_stream, AAUDIO_STREAM_STATE_STARTING, NULL, 100 * AAUDIO_NANOS_PER_MILLISECOND));
+    impl->info.rate = impl->oboe_stream->getSampleRate();
+
+	CHK(impl->oboe_stream->requestStart());
+	CHK(impl->oboe_stream->waitForStateChange(impl->oboe_stream, StreamState::Starting, NULL, 1000 * NANOS_PER_MILLISECOND));
     return 0;
 
 fail:
@@ -261,8 +253,8 @@ static int create_stream(struct impl *impl)
 	uint8_t buffer[1024];
 	struct spa_pod_builder b;
 
-    open_aaudio_stream(impl);
-	impl->stream = pw_stream_new(impl->core, "aaudio sink", impl->stream_props);
+    open_oboe_stream(impl);
+	impl->stream = pw_stream_new(impl->core, "oboe sink", impl->stream_props);
 	impl->stream_props = NULL;
 
 	if (impl->stream == NULL)
@@ -297,7 +289,7 @@ static void core_error(void *data, uint32_t id, int seq, int res, const char *me
 			id, seq, res, spa_strerror(res), message);
 
 	if (id == PW_ID_CORE && res == -EPIPE)
-        AAudioStream_close(impl->aaudio_stream);
+        impl->oboe_stream->close();
 		pw_impl_module_schedule_destroy(impl->module);
 }
 
@@ -309,7 +301,7 @@ static const struct pw_core_events core_events = {
 static void core_destroy(void *d)
 {
 	struct impl *impl = (struct impl *)d;
-    AAudioStream_close(impl->aaudio_stream);
+	impl->oboe_stream->close();
 	spa_hook_remove(&impl->core_listener);
 	impl->core = NULL;
 	pw_impl_module_schedule_destroy(impl->module);
@@ -458,7 +450,7 @@ static void copy_props(struct impl *impl, struct pw_properties *props, const cha
 SPA_EXPORT
 int pipewire__module_init(struct pw_impl_module *module, const char *args)
 {
-	pw_log_debug("aaudio sink init");
+	pw_log_debug("oboe sink init");
 	struct pw_context *context = pw_impl_module_get_context(module);
 	struct pw_properties *props = NULL;
 	uint32_t id = pw_global_get_id(pw_impl_module_get_global(module));
@@ -504,7 +496,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 		pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Sink");
 
 	if (pw_properties_get(props, PW_KEY_NODE_NAME) == NULL)
-		pw_properties_setf(props, PW_KEY_NODE_NAME, "aaudio-sink-%u-%u", pid, id);
+		pw_properties_setf(props, PW_KEY_NODE_NAME, "oboe-sink-%u-%u", pid, id);
 	if (pw_properties_get(props, PW_KEY_NODE_DESCRIPTION) == NULL)
 		pw_properties_set(props, PW_KEY_NODE_DESCRIPTION,
 				pw_properties_get(props, PW_KEY_NODE_NAME));
