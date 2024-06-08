@@ -164,6 +164,8 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 	}
 }
 
+static int open_oboe_stream(struct impl *impl);
+
 static void playback_stream_process(void *d)
 {
 	struct impl *impl = (struct impl *)d;
@@ -206,7 +208,7 @@ static const struct pw_stream_events playback_stream_events = {
 };
 
 
-static void core_destroy(void *d);
+// static void core_destroy(void *d);
 
 // static void error_callback(std::shared_ptr<oboe::AudioStream> stream, void *impl, oboe::Result error) {
 //     pw_log_debug("Oboe error: %d", error);
