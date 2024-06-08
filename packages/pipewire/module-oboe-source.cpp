@@ -195,6 +195,7 @@ static void capture_stream_process(void *d)
 		else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
 				open_oboe_stream(impl);
+			// TODO
 			// else
 			// 	pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
 		}
