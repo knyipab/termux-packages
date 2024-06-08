@@ -9,7 +9,7 @@ TERMUX_PKG_AUTO_UPDATE=true
 
 termux_step_post_make_install() {
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--disable-static"
-	termux_step_configure_autotools
+	termux_step_configure
 	termux_step_make
 	termux_step_make_install
 }
