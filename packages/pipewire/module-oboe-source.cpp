@@ -532,9 +532,8 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	parse_audio_info(impl->stream_props, &impl->info);
 
 	impl->frame_size = calc_frame_size(&impl->info);
-	impl->stream_read_timeout = pw_properties_get_uint64(impl->stream_props, "stream.read.timeout", impl->stream_read_timeout);
-	if (impl->stream_read_timeout == 0 && pw_properties_get(props, "stream.read.timeout") == NULL)
-		impl->stream_read_timeout = DEFAULT_STREAM_READ_TIMEOUT;
+
+	impl->stream_read_timeout = pw_properties_get_uint64(impl->stream_props, "stream.read.timeout", DEFAULT_STREAM_READ_TIMEOUT);
 	pw_log_debug( "stream read timeout set to %d", impl->stream_read_timeout);
 	if (impl->frame_size == 0) {
 		res = -EINVAL;
