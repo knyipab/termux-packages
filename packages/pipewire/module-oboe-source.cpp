@@ -187,7 +187,7 @@ static void capture_stream_process(void *d)
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-		if ((returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout)) != oboe::Result::OK)
+		if ((returnCode = impl->oboe_stream->read(data, numFrames, 0)) != oboe::Result::OK)
 			pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
 		else 
 			size = returnCode.value() * impl->frame_size;
