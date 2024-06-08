@@ -185,7 +185,7 @@ static void playback_stream_process(void *d)
 	    data = SPA_PTROFF(bd->data, offs, void);
         
 		// TODO: investigate timeout
-        if (returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200) != oboe::Result::OK)
+        if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200)) != oboe::Result::OK)
             pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
 	}
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
