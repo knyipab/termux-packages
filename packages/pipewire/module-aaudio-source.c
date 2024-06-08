@@ -302,8 +302,8 @@ static void parse_position(struct spa_audio_info_raw *info, const char *val, siz
 	char v[256];
 
 	spa_json_init(&it[0], val, len);
-        if (spa_json_enter_array(&it[0], &it[1]) <= 0)
-                spa_json_init(&it[1], val, len);
+	if (spa_json_enter_array(&it[0], &it[1]) <= 0)
+			spa_json_init(&it[1], val, len);
 
 	info->channels = 0;
 	while (spa_json_get_string(&it[1], v, sizeof(v)) > 0 &&

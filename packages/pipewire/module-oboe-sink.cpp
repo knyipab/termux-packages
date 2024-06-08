@@ -92,6 +92,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define DEFAULT_RATE 48000
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_POSITION "[ FL FR ]"
+#define DEFAULT_STREAM_WRITE_TIMEOUT 500
 
 #define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
 			"( node.name=<name of the nodes> ) "					\
@@ -100,6 +101,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 			"( audio.rate=<sample rate, default: " SPA_STRINGIFY(DEFAULT_RATE) "> ) "			\
 			"( audio.channels=<number of channels, default:" SPA_STRINGIFY(DEFAULT_CHANNELS) "> ) "	\
 			"( audio.position=<channel map, default:" DEFAULT_POSITION "> ) "		\
+			"( stream.write.timeout=<timeout for wrtiing into stream in nanosecs, default:" SPA_STRINGIFY(DEFAULT_STREAM_WRITE_TIMEOUT) "> ) "	\
 			"( stream.props=<properties> ) "
 
 
@@ -128,6 +130,7 @@ struct impl {
 	struct spa_hook stream_listener;
 	struct spa_audio_info_raw info;
 	uint32_t frame_size;
+	int64_t stream_write_timeout;
 
 	unsigned int do_disconnect:1;
 
@@ -185,8 +188,10 @@ static void playback_stream_process(void *d)
 	    data = SPA_PTROFF(bd->data, offs, void);
         
 		// TODO: investigate timeout
-        if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200)) != oboe::Result::OK)
+        if ((returnCode = impl->oboe_stream->write(data, size / impl->frame_size, impl->stream_write_timeout)) != oboe::Result::OK)
             pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
+		if (returnCode == oboe::Result::ErrorDisconnected)
+			open_oboe_stream(impl);
 	}
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
 
@@ -367,8 +372,8 @@ static void parse_position(struct spa_audio_info_raw *info, const char *val, siz
 	char v[256];
 
 	spa_json_init(&it[0], val, len);
-        if (spa_json_enter_array(&it[0], &it[1]) <= 0)
-                spa_json_init(&it[1], val, len);
+	if (spa_json_enter_array(&it[0], &it[1]) <= 0)
+			spa_json_init(&it[1], val, len);
 
 	info->channels = 0;
 	while (spa_json_get_string(&it[1], v, sizeof(v)) > 0 &&
@@ -520,6 +525,9 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	parse_audio_info(impl->stream_props, &impl->info);
 
 	impl->frame_size = calc_frame_size(&impl->info);
+	impl->stream_write_timeout = pw_properties_get_uint64(impl->stream_props, "stream.write.timeout", impl->stream_write_timeout);
+	if (impl->stream_write_timeout == 0)
+		impl->stream_write_timeout = DEFAULT_STREAM_WRITE_TIMEOUT;
 	if (impl->frame_size == 0) {
 		res = -EINVAL;
 		pw_log_error( "can't parse audio format");
