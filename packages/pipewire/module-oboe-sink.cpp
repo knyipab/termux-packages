@@ -466,6 +466,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	struct impl *impl;
 	const char *str;
 	int res;
+	spa_dict temp_spa_dict;
 
 	PW_LOG_TOPIC_INIT(mod_topic);
 
@@ -558,7 +559,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 
 	pw_impl_module_add_listener(module, &impl->module_listener, &module_events, impl);
 
-	spa_dict temp_spa_dict = (struct spa_dict) { 0, SPA_N_ELEMENTS(module_props), (module_props) };
+	temp_spa_dict = (struct spa_dict) { 0, SPA_N_ELEMENTS(module_props), (module_props) };
 	pw_impl_module_update_properties(module, &temp_spa_dict);
 
 	return 0;
