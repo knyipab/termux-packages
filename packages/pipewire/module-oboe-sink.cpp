@@ -2,6 +2,8 @@
 /* SPDX-FileCopyrightText: Copyright © 2021 Wim Taymans */
 /* SPDX-License-Identifier: MIT */
 
+extern "C" {
+
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
@@ -16,7 +18,6 @@
 
 #include "config.h"
 
-extern "C" {
 #include <spa/utils/result.h>
 #include <spa/utils/string.h>
 #include <spa/utils/json.h>
@@ -28,7 +29,6 @@ extern "C" {
 
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
-}
 
 #include <android/versioning.h>
 #undef __INTRODUCED_IN
@@ -567,4 +567,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 error:
 	impl_destroy(impl);
 	return res;
+}
+
+
 }
