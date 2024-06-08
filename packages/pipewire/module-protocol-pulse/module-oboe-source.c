@@ -151,31 +151,31 @@ static int module_oboe_source_prepare(struct module * const module)
 	}
 
 	if ((str = pw_properties_get(props, "node_latency")) != NULL) {
-		pw_properties_set(aaudio_props, "node.latency", str);
+		pw_properties_set(oboe_props, "node.latency", str);
 		pw_properties_set(props, "node_latency", NULL);
 	}
 	if ((str = pw_properties_get(props, "node_name")) != NULL) {
-		pw_properties_set(aaudio_props, "node.name", str);
+		pw_properties_set(oboe_props, "node.name", str);
 		pw_properties_set(props, "node_name", NULL);
 	}
 	if ((str = pw_properties_get(props, "node_description")) != NULL) {
-		pw_properties_set(aaudio_props, "node.description", str);
+		pw_properties_set(oboe_props, "node.description", str);
 		pw_properties_set(props, "node_description", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_format")) != NULL) {
-		pw_properties_set(aaudio_props, "audio.format", str);
+		pw_properties_set(oboe_props, "audio.format", str);
 		pw_properties_set(props, "audio_format", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_rate")) != NULL) {
-		pw_properties_set(aaudio_props, "audio.rate", str);
+		pw_properties_set(oboe_props, "audio.rate", str);
 		pw_properties_set(props, "audio_rate", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_channels")) != NULL) {
-		pw_properties_set(aaudio_props, "audio.channels", str);
+		pw_properties_set(oboe_props, "audio.channels", str);
 		pw_properties_set(props, "audio_channels", NULL);
 	}
 	if ((str = pw_properties_get(props, "audio_position")) != NULL) {
-		pw_properties_set(aaudio_props, "audio.position", str);
+		pw_properties_set(oboe_props, "audio.position", str);
 		pw_properties_set(props, "audio_position", NULL);
 	}
 	if ((str = pw_properties_get(props, "stream_write_timeout")) != NULL) {
@@ -189,7 +189,7 @@ static int module_oboe_source_prepare(struct module * const module)
 
 	d->module = module;
 	d->stream_props = stream_props;
-	d->aaudio_props = aaudio_props;
+	d->oboe_props = oboe_props;
 
 	return 0;
 out:
