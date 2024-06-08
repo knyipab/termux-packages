@@ -161,7 +161,6 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 }
 
 static int open_oboe_stream(struct impl *impl);
-}
 
 static void playback_stream_process(void *d)
 {
@@ -197,7 +196,6 @@ static void playback_stream_process(void *d)
 	pw_stream_queue_buffer(impl->stream, buf);
 }
 
-extern "C" {
 static const struct pw_stream_events playback_stream_events = {
 	PW_VERSION_STREAM_EVENTS,
 	.destroy = stream_destroy,
