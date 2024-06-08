@@ -235,7 +235,6 @@ static int open_oboe_stream(struct impl *impl)
     }
 
 	CHK(builder.setDirection(oboe::Direction::Input)
-				->setSharingMode(oboe::SharingMode::Shared)
                 ->setChannelCount(impl->info.channels)
                 ->setSampleRate(impl->info.rate)
                 ->setFormat(format)
