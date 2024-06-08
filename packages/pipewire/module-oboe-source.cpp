@@ -191,7 +191,7 @@ static void capture_stream_process(void *d)
 		if (returnCode == oboe::Result::OK)
 			size = returnCode * impl->frame_size;
 			if (returnCode != numFrames)
-				pw_log_debug("out of buffers: %d", returnCode);
+				pw_log_debug("number of frames read: %d", returnCode);
 		else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
 				open_oboe_stream(impl);
