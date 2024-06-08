@@ -2,6 +2,8 @@
 /* SPDX-FileCopyrightText: Copyright © 2021 Wim Taymans */
 /* SPDX-License-Identifier: MIT */
 
+#include <oboe/Oboe.h>
+
 extern "C" {
 
 #include <string.h>
@@ -30,11 +32,6 @@ extern "C" {
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
 
-}
-
-#include <oboe/Oboe.h>
-
-extern "C" {
 #define NANOS_PER_MILLISECOND 1000000L
 
 /** \page page_module_oboe_sink Oboe Sink
