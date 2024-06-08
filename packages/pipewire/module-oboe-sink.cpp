@@ -168,7 +168,7 @@ static void playback_stream_process(void *d)
 	struct spa_data *bd;
 	void *data;
 	uint32_t offs, size, i;
-    Result returnCode;
+    oboe::Result returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
@@ -185,8 +185,8 @@ static void playback_stream_process(void *d)
 	    data = SPA_PTROFF(bd->data, offs, void);
         
 		// TODO: investigate timeout
-        if (returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200) < 0)
-            pw_log_error("Oboe stream write() error: %s", oboe::convertResultToText(returnCode));
+        if (returnCode = impl->oboe_stream->write(data, size / impl->frame_size, 200) != oboe::OK)
+            pw_log_error("Oboe stream write() error: %s", oboe::convertToText(returnCode));
 	}
 	pw_log_info("got buffer of size %d (= %d frames) and data %p", size, size / impl->frame_size, data);
 
@@ -203,15 +203,15 @@ static const struct pw_stream_events playback_stream_events = {
 
 static void core_destroy(void *d);
 
-// static void error_callback(std::shared_ptr<oboe::AudioStream> stream, void *impl, Result error) {
+// static void error_callback(std::shared_ptr<oboe::AudioStream> stream, void *impl, oboe::Result error) {
 //     pw_log_debug("Oboe error: %d", error);
 //     core_destroy(impl);
 // }
 
 #define CHK(stmt) { \
-    Result res = stmt; \
-    if (res != OK) { \
-        pw_log_error("Oboe error %s at %s:%d\n", oboe::convertResultToText(res), __FILE__, __LINE__); \
+    oboe::Result res = stmt; \
+    if (res != oboe::OK) { \
+        pw_log_error("Oboe error %s at %s:%d\n", oboe::convertToText(res), __FILE__, __LINE__); \
         goto fail; \
     } \
 }
@@ -241,7 +241,7 @@ static int open_oboe_stream(struct impl *impl)
     impl->info.rate = impl->oboe_stream->getSampleRate();
 
 	CHK(impl->oboe_stream->requestStart());
-	CHK(impl->oboe_stream->waitForStateChange(impl->oboe_stream, StreamState::Starting, NULL, 1000 * NANOS_PER_MILLISECOND));
+	CHK(impl->oboe_stream->waitForStateChange(oboe::StreamState::Starting, NULL, 1000 * NANOS_PER_MILLISECOND));
     return 0;
 
 fail:
