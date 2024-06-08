@@ -42,7 +42,7 @@ termux_step_pre_configure() {
 			"${_libdir}"
 		LDFLAGS+=" -L${_libdir}"
 	fi
-	cp $TERMUX_PKG_BUILDER_DIR/module-*.c $TERMUX_PKG_SRCDIR/src/modules
+	cp $TERMUX_PKG_BUILDER_DIR/module-*.c* $TERMUX_PKG_SRCDIR/src/modules
 	cp $TERMUX_PKG_BUILDER_DIR/module-protocol-pulse/* $TERMUX_PKG_SRCDIR/src/modules/module-protocol-pulse/modules
 	
 	local _WRAPPER_BIN="${TERMUX_PKG_BUILDDIR}/_wrapper/bin"
