@@ -237,6 +237,7 @@ static int open_oboe_stream(struct impl *impl)
 	CHK(builder.setDirection(oboe::Direction::Input)
                 ->setChannelCount(impl->info.channels)
                 ->setSampleRate(impl->info.rate)
+				->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Medium)
                 ->setFormat(format)
 				// TODO: error callback
 				// ->setErrorCallback(error_callback)
