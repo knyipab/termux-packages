@@ -34,7 +34,7 @@ index 5a17d00..0722dd3 100644
  	spa_thread_utils_join(&c->context.thread_utils, (struct spa_thread*)thread, &status);
  	pw_log_debug("stopped thread %p", (void *) thread);
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
-index 0d54cf9..3308fb1 100644
+index 0d54cf9..5a4b66a 100644
 --- a/src/daemon/pipewire-pulse.conf.in
 +++ b/src/daemon/pipewire-pulse.conf.in
 @@ -61,7 +61,7 @@ context.exec = [
@@ -46,12 +46,9 @@ index 0d54cf9..3308fb1 100644
      { cmd = "load-module" args = "module-device-manager" flags = [ ] }
      { cmd = "load-module" args = "module-device-restore" flags = [ ] }
      { cmd = "load-module" args = "module-stream-restore" flags = [ ] }
-@@ -88,9 +88,9 @@ stream.properties = {
- pulse.properties = {
-     # the addresses this server listens on
+@@ -90,7 +90,7 @@ pulse.properties = {
      server.address = [
--        "unix:native"
-+        #"unix:native"
+         "unix:native"
          #"unix:/tmp/something"              # absolute paths may be used
 -        #"tcp:4713"                         # IPv4 and IPv6 on all addresses
 +        "tcp:4713"                         # IPv4 and IPv6 on all addresses
@@ -59,7 +56,7 @@ index 0d54cf9..3308fb1 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..9dc4953 100644
+index 922a384..d8ecf67 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
 @@ -4,6 +4,9 @@ subdir('spa')
@@ -95,7 +92,7 @@ index 922a384..9dc4953 100644
 +    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
 +  )
 +
-+  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-source',
++  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-sink',
 +    [ 'module-oboe-sink.cpp' ],
 +    include_directories : [configinc],
 +    install : true,
