@@ -185,10 +185,13 @@ static void capture_stream_process(void *d)
 
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
+		numFrames = size / impl->frame_size;
 
-	    auto returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
+	    oboe::Result returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
 		if (returnCode == oboe::Result::OK)
-			size = returnCode.value() * impl->frame_size;
+			size = returnCode * impl->frame_size;
+			if (returnCode != numFrames)
+				pw_log_debug("out of buffers: %d", returnCode);
 		else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
 				open_oboe_stream(impl);
