@@ -32,6 +32,8 @@ extern "C" {
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
 
+#define NANOS_PER_MILLISECOND 1000000L
+
 /** \page page_module_oboe_source Oboe Source
  *
  * The oboe source is a good starting point for writing a custom
@@ -172,6 +174,7 @@ static void capture_stream_process(void *d)
 	struct spa_data *bd;
 	void *data;
 	uint32_t size;
+    oboe::Result returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
