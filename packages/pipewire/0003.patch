@@ -59,19 +59,20 @@ index 0d54cf9..06a5678 100644
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..4689f30 100644
+index 922a384..72a12cf 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
-@@ -4,6 +4,8 @@ subdir('spa')
+@@ -4,6 +4,9 @@ subdir('spa')
  # The list of "main" source files for modules, the ones that have the
  # doxygen documentation
  module_sources = [
 +  'module-aaudio-source.c',
 +  'module-aaudio-sink.c',
++  'module-oboe-sink.cpp',
    'module-access.c',
    'module-adapter.c',
    'module-avb.c',
-@@ -49,6 +51,26 @@ module_sources = [
+@@ -49,6 +52,35 @@ module_sources = [
    'module-x11-bell.c',
  ]
  
@@ -93,12 +94,21 @@ index 922a384..4689f30 100644
 +    install_rpath: modules_install_dir,
 +    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
 +  )
++
++  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-source',
++    [ 'module-oboe-source.cpp' ],
++    include_directories : [configinc],
++    install : true,
++    install_dir : modules_install_dir,
++    install_rpath: modules_install_dir,
++    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
++  )
 +endif
 +
  pipewire_module_access_deps = [spa_dep, mathlib, dl_lib, pipewire_dep]
  if flatpak_support
    pipewire_module_access_deps += glib2_dep
-@@ -376,6 +398,8 @@ pipewire_module_protocol_pulse_sources = [
+@@ -376,6 +408,8 @@ pipewire_module_protocol_pulse_sources = [
    'module-protocol-pulse/stream.c',
    'module-protocol-pulse/utils.c',
    'module-protocol-pulse/volume.c',
