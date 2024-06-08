@@ -234,7 +234,8 @@ static int open_oboe_stream(struct impl *impl)
                 ->setChannelCount(impl->info.channels)
                 ->setSampleRate(impl->info.rate)
 				->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Medium)
-                ->setFormat(oboe::AudioFormat::Float)
+                ->setFormat(format)
+				// TODO: error callback
 				// ->setErrorCallback(error_callback)
                 ->openStream(impl->oboe_stream));
 
@@ -387,8 +388,6 @@ static void parse_audio_info(const struct pw_properties *props, struct spa_audio
 	info->format = static_cast<spa_audio_format>(format_from_name(str, strlen(str)));
 	switch (info->format) {
 		case SPA_AUDIO_FORMAT_S16_LE: 
-		case SPA_AUDIO_FORMAT_S24_LE: 
-		case SPA_AUDIO_FORMAT_S32_LE: 
 		case SPA_AUDIO_FORMAT_F32_LE: 
 			break;
 		default:
