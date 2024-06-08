@@ -6,4 +6,11 @@ TERMUX_PKG_VERSION="1.8.1"
 TERMUX_PKG_SRCURL="https://github.com/google/oboe/archive/refs/tags/$TERMUX_PKG_VERSION.tar.gz"
 TERMUX_PKG_SHA256=af80c16175aa4602e51f3f4378424a199e5d91476b1cba6cd00299bf1e21881f
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--disable-static"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-DBUILD_SHARED_LIBS=TRUE"
+
+# termux_step_post_make_install() {
+# 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--disable-static"
+# 	termux_step_configure
+# 	termux_step_make
+# 	termux_step_make_install
+# }
