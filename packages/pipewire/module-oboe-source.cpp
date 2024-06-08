@@ -187,13 +187,14 @@ static void capture_stream_process(void *d)
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-		if ((returnCode = impl->oboe_stream->read(data, numFrames, 0)) != oboe::Result::OK)
-			pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
-		else 
+		if ((returnCode = impl->oboe_stream->read(data, numFrames, 0)) == oboe::Result::OK)
 			size = returnCode.value() * impl->frame_size;
-
-		if (returnCode == oboe::Result::ErrorDisconnected)
-			open_oboe_stream(impl);
+		else {
+			if (returnCode == oboe::Result::ErrorDisconnected)
+				open_oboe_stream(impl);
+			else
+				pw_log_error("Oboe stream read() error: %s", oboe::convertToText(returnCode));
+		}
 		pw_log_info("fill buffer data %p with up to %u bytes", data, size);
 
 		bd->chunk->size = size;
