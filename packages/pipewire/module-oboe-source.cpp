@@ -174,7 +174,6 @@ static void capture_stream_process(void *d)
 	struct spa_data *bd;
 	void *data;
 	uint32_t size, numFrames, i;
-    oboe::ResultWithValue<int32_t> returnCode;
 
 	if ((buf = pw_stream_dequeue_buffer(impl->stream)) == NULL) {
 		pw_log_debug("out of buffers: %m");
@@ -187,7 +186,8 @@ static void capture_stream_process(void *d)
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-		if ((returnCode = impl->oboe_stream->read(data, numFrames, 0)) == oboe::Result::OK)
+	    oboe::ResultWithValue<int32_t> returnCode = impl->oboe_stream->read(data, numFrames, 0);
+		if (returnCode == oboe::Result::OK)
 			size = returnCode.value() * impl->frame_size;
 		else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
