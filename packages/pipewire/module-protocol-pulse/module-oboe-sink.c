@@ -120,7 +120,7 @@ static const char* const valid_args[] = {
 	"audio_rate",
 	"audio_channels",
 	"audio_position",
-	"stream_read_timeout",
+	"stream_write_timeout",
 	"stream_props",
 	NULL
 };

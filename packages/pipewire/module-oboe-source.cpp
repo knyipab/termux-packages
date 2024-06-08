@@ -92,7 +92,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define DEFAULT_RATE 48000
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_POSITION "[ FL FR ]"
-#define DEFAULT_STREAM_READ_TIMEOUT 500
+#define DEFAULT_STREAM_READ_TIMEOUT 0
 
 #define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
 			"( node.name=<name of the nodes> ) "					\
@@ -166,6 +166,7 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 }
 
 static int open_oboe_stream(struct impl *impl);
+}
 
 static void capture_stream_process(void *d)
 {
@@ -186,7 +187,7 @@ static void capture_stream_process(void *d)
 		data = bd->data;
 		size = buf->requested ? buf->requested * impl->frame_size : bd->maxsize;
 
-	    oboe::ResultWithValue<int32_t> returnCode = impl->oboe_stream->read(data, numFrames, 0);
+	    oboe::ResultWithValue<int32_t> returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
 		if (returnCode == oboe::Result::OK)
 			size = returnCode.value() * impl->frame_size;
 		else {
@@ -206,6 +207,7 @@ static void capture_stream_process(void *d)
 	pw_stream_queue_buffer(impl->stream, buf);
 }
 
+extern "C" {
 static const struct pw_stream_events capture_stream_events = {
 	PW_VERSION_STREAM_EVENTS,
 	.destroy = stream_destroy,
@@ -530,8 +532,9 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 
 	impl->frame_size = calc_frame_size(&impl->info);
 	impl->stream_read_timeout = pw_properties_get_uint64(impl->stream_props, "stream.read.timeout", impl->stream_read_timeout);
-	if (impl->stream_read_timeout == 0)
+	if (impl->stream_read_timeout == 0 && pw_properties_get(props, "stream.read.timeout") == NULL)
 		impl->stream_read_timeout = DEFAULT_STREAM_READ_TIMEOUT;
+	pw_log_debug( "stream read timeout set to %d", impl->stream_read_timeout);
 	if (impl->frame_size == 0) {
 		res = -EINVAL;
 		pw_log_error( "can't parse audio format");
