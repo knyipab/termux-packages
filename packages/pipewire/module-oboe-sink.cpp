@@ -280,7 +280,7 @@ static int create_stream(struct impl *impl)
 	if ((res = pw_stream_connect(impl->stream,
 			PW_DIRECTION_INPUT,
 			PW_ID_ANY,
-			(PW_STREAM_FLAG_AUTOCONNECT |
+			static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
 			PW_STREAM_FLAG_MAP_BUFFERS |
 			PW_STREAM_FLAG_RT_PROCESS),
 			params, n_params)) < 0)
@@ -388,7 +388,7 @@ static void parse_audio_info(const struct pw_properties *props, struct spa_audio
 	if ((str = pw_properties_get(props, PW_KEY_AUDIO_FORMAT)) == NULL)
 		str = DEFAULT_FORMAT;
     // TODO: enforce Android compatible format
-	info->format = (format_from_name(str, strlen(str)));
+	info->format = static_cast<spa_audio_format>(format_from_name(str, strlen(str)));
 	switch (info->format) {
 		case SPA_AUDIO_FORMAT_S16_LE: 
 		case SPA_AUDIO_FORMAT_S24_LE: 
