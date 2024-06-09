@@ -189,8 +189,9 @@ static void capture_stream_process(void *d)
 
 	    auto returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
 		if (returnCode == oboe::Result::OK)
-			size = returnCode.value() * impl->frame_size;
-			if (returnCode.value() != numFrames)
+			if (impl->stream_read_timeout == 0)
+				size = returnCode.value() * impl->frame_size;
+			if (returnCode.value() != numFrames)	
 				pw_log_debug("number of frames read: %d", returnCode.value());
 		else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
@@ -244,6 +245,8 @@ static int open_oboe_stream(struct impl *impl)
     }
 
 	CHK(builder.setDirection(oboe::Direction::Input)
+				->setSharingMode(oboe::SharingMode::Shared)
+				->setInputPreset(oboe::InputPreset::Unprocessed)
                 ->setChannelCount(impl->info.channels)
                 ->setSampleRate(impl->info.rate)
 				->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Medium)
