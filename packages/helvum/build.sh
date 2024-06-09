@@ -1,5 +1,5 @@
 TERMUX_PKG_HOMEPAGE=https://gitlab.freedesktop.org/pipewire/helvum
-TERMUX_PKG_DESCRIPTION="A GTK patchbay for pipewire. "
+TERMUX_PKG_DESCRIPTION="A GTK patchbay for pipewire"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="0.5.1"
