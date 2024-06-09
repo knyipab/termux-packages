@@ -12,7 +12,7 @@ termux_step_configure() {
 	CFLAGS+=" -ffast-math"
 	CXXFLAGS+=" -ffast-math"
 	LDFLAGS+=" -Wl,--as-needed"
-	python3 ./waf configure --alsa --classic --prefix="$TERMUX_PRFIX"
+	python3 ./waf configure --alsa --classic --prefix="$TERMUX_PREFIX"
 }
 
 termux_step_make() {
@@ -20,5 +20,5 @@ termux_step_make() {
 }
 
 termux_step_make_install() {
-	python3 ./waf install --destdir="$TERMUX_PRFIX"
+	python3 ./waf install --destdir="$TERMUX_PREFIX"
 }
