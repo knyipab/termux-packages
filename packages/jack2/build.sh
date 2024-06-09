@@ -6,13 +6,13 @@ TERMUX_PKG_VERSION=1.9.22
 TERMUX_PKG_SRCURL=https://github.com/jackaudio/jack2/archive/refs/tags/v$TERMUX_PKG_VERSION.tar.gz
 TERMUX_PKG_SHA256=1e42b9fc4ad7db7befd414d45ab2f8a159c0b30fcd6eee452be662298766a849
 # TERMUX_PKG_DEPENDS="libdb, libandroid-sysv-semaphore, libandroid-shmem"
-TERMUX_PKG_DEPENDS="alsa-lib, libdb, dbus, doxygen, libexpat, libsamplerate, libopus"
+TERMUX_PKG_DEPENDS="alsa-lib, libdb, dbus, doxygen, libandroid-shmem, libexpat, libsamplerate, libopus"
 TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_configure() {
 	CFLAGS+=" -ffast-math"
 	CXXFLAGS+=" -ffast-math"
-	LDFLAGS+=" -Wl,--as-needed"
+	LDFLAGS+=" -landroid-shmem -Wl,--as-needed"
 	python3 ./waf configure --alsa --classic --prefix="$TERMUX_PREFIX" --htmldir=$TERMUX_PREFIX/share/doc/jack2/html --firewire=no
 }
 
