@@ -13,7 +13,6 @@ TERMUX_PKG_DEPENDS="libc++"
 TERMUX_PKG_BUILD_DEPENDS="pulseaudio"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --enable-cxx
---with-pulseaudio
 --without-alsa
 --without-jack
 --without-oss
