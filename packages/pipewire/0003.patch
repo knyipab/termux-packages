@@ -18,6 +18,39 @@ index cda6011..4d423b7 100644
  # On FreeBSD and MidnightBSD, epoll-shim library is required for eventfd() and timerfd()
  epoll_shim_dep = (host_machine.system() == 'freebsd' or host_machine.system() == 'midnightbsd'
      ? dependency('epoll-shim', required: true)
+diff --git a/pipewire-alsa/alsa-plugins/pcm_pipewire.c b/pipewire-alsa/alsa-plugins/pcm_pipewire.c
+index 4ba25ee..7c3cacd 100644
+--- a/pipewire-alsa/alsa-plugins/pcm_pipewire.c
++++ b/pipewire-alsa/alsa-plugins/pcm_pipewire.c
+@@ -1126,7 +1126,7 @@ static const struct pw_core_events core_events = {
+ };
+ 
+ 
+-static ssize_t log_write(void *cookie, const char *buf, size_t size)
++static int log_write(void *cookie, const char *buf, int size)
+ {
+ 	int len;
+ 
+@@ -1140,10 +1140,6 @@ static ssize_t log_write(void *cookie, const char *buf, size_t size)
+ 	return size;
+ }
+ 
+-static cookie_io_functions_t io_funcs = {
+-	.write = log_write,
+-};
+-
+ static int execute_match(void *data, const char *location, const char *action,
+                 const char *val, size_t len)
+ {
+@@ -1169,7 +1165,7 @@ static int snd_pcm_pipewire_open(snd_pcm_t **pcmp,
+ 	pw->props = props;
+ 	pw->fd = -1;
+ 	pw->io.poll_fd = -1;
+-	pw->log_file = fopencookie(pw, "w", io_funcs);
++	pw->log_file = fwopen(pw, log_write);
+ 	if (pw->log_file == NULL) {
+ 		pw_log_error("can't create log file: %m");
+ 		err = -errno;
 diff --git a/pipewire-jack/src/pipewire-jack.c b/pipewire-jack/src/pipewire-jack.c
 index 5a17d00..0722dd3 100644
 --- a/pipewire-jack/src/pipewire-jack.c
@@ -37,6 +70,39 @@ index 5a17d00..0722dd3 100644
  	pw_log_debug("join thread %p", (void *) thread);
  	spa_thread_utils_join(&c->context.thread_utils, (struct spa_thread*)thread, &status);
  	pw_log_debug("stopped thread %p", (void *) thread);
+diff --git a/spa/plugins/alsa/alsa-pcm.c b/spa/plugins/alsa/alsa-pcm.c
+index 55a152e..ef29c33 100644
+--- a/spa/plugins/alsa/alsa-pcm.c
++++ b/spa/plugins/alsa/alsa-pcm.c
+@@ -626,7 +626,7 @@ int spa_alsa_parse_prop_params(struct state *state, struct spa_pod *params)
+ 
+ #define CHECK(s,msg,...) if ((err = (s)) < 0) { spa_log_error(state->log, msg ": %s", ##__VA_ARGS__, snd_strerror(err)); return err; }
+ 
+-static ssize_t log_write(void *cookie, const char *buf, size_t size)
++static int log_write(void *cookie, const char *buf, int size)
+ {
+ 	struct state *state = cookie;
+ 	int len;
+@@ -641,10 +641,6 @@ static ssize_t log_write(void *cookie, const char *buf, size_t size)
+ 	return size;
+ }
+ 
+-static cookie_io_functions_t io_funcs = {
+-	.write = log_write,
+-};
+-
+ static void silence_error_handler(const char *file, int line,
+ 		const char *function, int err, const char *fmt, ...)
+ {
+@@ -946,7 +942,7 @@ int spa_alsa_init(struct state *state, const struct spa_dict *info)
+ 		spa_log_error(state->log, "can't create card %u", state->card_index);
+ 		return -errno;
+ 	}
+-	state->log_file = fopencookie(state, "w", io_funcs);
++	state->log_file = fwopen(state, log_write);
+ 	if (state->log_file == NULL) {
+ 		spa_log_error(state->log, "can't create log file");
+ 		return -errno;
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
 index 0d54cf9..9d7759e 100644
 --- a/src/daemon/pipewire-pulse.conf.in
