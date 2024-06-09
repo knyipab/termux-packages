@@ -1,0 +1,52 @@
+diff --git a/src/pcm/pcm_direct.c b/src/pcm/pcm_direct.c
+index e53e592..fd0df41 100644
+--- a/src/pcm/pcm_direct.c
++++ b/src/pcm/pcm_direct.c
+@@ -33,7 +33,7 @@
+ #include <sys/mman.h>
+ #include <poll.h>
+ #include <sys/shm.h>
+-#include <sys/sem.h>
++#include <linux/sem.h>
+ #include <sys/wait.h>
+ #include <sys/socket.h>
+ #include <sys/stat.h>
+diff --git a/src/pcm/pcm_dmix.c b/src/pcm/pcm_dmix.c
+index 55cae3e..ae50bfd 100644
+--- a/src/pcm/pcm_dmix.c
++++ b/src/pcm/pcm_dmix.c
+@@ -39,7 +39,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/shm.h>
+-#include <sys/sem.h>
++#include <linux/sem.h>
+ #include <sys/wait.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+diff --git a/src/pcm/pcm_dshare.c b/src/pcm/pcm_dshare.c
+index c032909..4f84fd6 100644
+--- a/src/pcm/pcm_dshare.c
++++ b/src/pcm/pcm_dshare.c
+@@ -39,7 +39,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/shm.h>
+-#include <sys/sem.h>
++#include <linux/sem.h>
+ #include <sys/wait.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+diff --git a/src/pcm/pcm_dsnoop.c b/src/pcm/pcm_dsnoop.c
+index bf67c68..2f367b7 100644
+--- a/src/pcm/pcm_dsnoop.c
++++ b/src/pcm/pcm_dsnoop.c
+@@ -39,7 +39,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/shm.h>
+-#include <sys/sem.h>
++#include <linux/sem.h>
+ #include <sys/wait.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
