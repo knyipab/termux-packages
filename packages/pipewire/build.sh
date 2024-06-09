@@ -22,6 +22,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dpipewire-jack=enabled
 -Djack=disabled
 -Ddbus=disabled
+-Dsession-managers=['wireplumber', 'media-session']
 -Dffmpeg=enabled
 -Dwireplumber:system-lua=true
 -Dwireplumber:system-lua-version=54
