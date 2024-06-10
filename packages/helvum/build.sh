@@ -132,7 +132,6 @@ termux_setup_meson() {
 
 termux_step_pre_configure() {
 	termux_setup_meson
-	termux_setup_rust
 
 	local _meson_buildtype="minsize"
 	local _meson_stripflag="--strip"
