@@ -13,7 +13,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	CPPFLAGS+=" -DANDROID"
+	CPPFLAGS+=" -Wno-implicit-function-declaration"
 	LDFLAGS+=" -landroid-shmem"
 	autoreconf -fi
 }
