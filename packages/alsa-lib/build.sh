@@ -9,13 +9,11 @@ TERMUX_PKG_DEPENDS="libandroid-shmem"
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-static
---disable-pcm
---disable-ucm
---disable-topology
 --with-versioned=no
 "
 
 termux_step_pre_configure() {
+	CPPFLAGS+=" -DANDROID"
 	LDFLAGS+=" -landroid-shmem"
 	autoreconf -fi
 }
