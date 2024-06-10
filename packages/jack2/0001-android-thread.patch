@@ -1,0 +1,46 @@
+diff --git a/common/wscript b/common/wscript
+index 178d4c1..5b0ec62 100644
+--- a/common/wscript
++++ b/common/wscript
+@@ -87,14 +87,14 @@ def build(bld):
+             'JackDebugClient.cpp',
+             'timestamps.c',
+             'promiscuous.c',
+-            '../posix/JackPosixThread.cpp',
++            '../posix/JackAndroidThread.cpp',
+             '../posix/JackPosixProcessSync.cpp',
+             '../posix/JackPosixMutex.cpp',
+             '../posix/JackSocket.cpp',
+             '../linux/JackLinuxFutex.cpp',
+             '../linux/JackLinuxTime.c',
+             ]
+-        includes = ['../linux', '../posix'] + includes
++        includes = ['../linux', '../posix', '../android'] + includes
+         uselib.append('RT')
+         uselib.append('DL')
+ 
+diff --git a/posix/JackPosixThread.h b/posix/JackPosixThread.h
+index 599bf49..5acb94a 100644
+--- a/posix/JackPosixThread.h
++++ b/posix/JackPosixThread.h
+@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ #ifndef __JackPosixThread__
+ #define __JackPosixThread__
+ 
++#ifdef __ANDROID__
++
++#include "JackAndroidThread.h"
++typedef JackAndroidThread JackPosixThread
++
++#else
++
+ #include "JackThread.h"
+ #include <pthread.h>
+ 
+@@ -85,5 +92,6 @@ SERVER_EXPORT void ThreadExit();
+ 
+ } // end of namespace
+ 
++#endif
+ 
+ #endif
