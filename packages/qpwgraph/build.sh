@@ -1,0 +1,9 @@
+TERMUX_PKG_HOMEPAGE=https://gitlab.freedesktop.org/rncbc/qpwgraph
+TERMUX_PKG_DESCRIPTION="PipeWire Graph Qt GUI Interface"
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_LICENSE="GPL-2.0"
+TERMUX_PKG_VERSION=0.7.2
+TERMUX_PKG_GIT_BRANCH=$TERMUX_PKG_VERSION
+TERMUX_PKG_SRCURL=git+https://gitlab.freedesktop.org/rncbc/qpwgraph
+TERMUX_PKG_DEPENDS="hicolor-icon-theme, qt6-qtbase, qt6-qtsvg, pipewire, alsa-lib"
+TERMUX_PKG_AUTO_UPDATE=true
