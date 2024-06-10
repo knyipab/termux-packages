@@ -1,5 +1,5 @@
 diff --git a/common/wscript b/common/wscript
-index 178d4c1..5b0ec62 100644
+index 178d4c1..9dddb9b 100644
 --- a/common/wscript
 +++ b/common/wscript
 @@ -87,14 +87,14 @@ def build(bld):
@@ -7,7 +7,7 @@ index 178d4c1..5b0ec62 100644
              'timestamps.c',
              'promiscuous.c',
 -            '../posix/JackPosixThread.cpp',
-+            '../posix/JackAndroidThread.cpp',
++            '../android/JackAndroidThread.cpp',
              '../posix/JackPosixProcessSync.cpp',
              '../posix/JackPosixMutex.cpp',
              '../posix/JackSocket.cpp',
