@@ -242,6 +242,7 @@ static int open_oboe_stream(struct impl *impl)
                 ->openStream(impl->oboe_stream));
 
     impl->info.rate = impl->oboe_stream->getSampleRate();
+	CHK(impl->oboe_stream->setBufferSizeInFrames(5 * impl->oboe_stream->getFramesPerBurst()));
 
 	CHK(impl->oboe_stream->requestStart());
 	CHK(impl->oboe_stream->waitForStateChange(oboe::StreamState::Starting, NULL, 1000 * NANOS_PER_MILLISECOND));
