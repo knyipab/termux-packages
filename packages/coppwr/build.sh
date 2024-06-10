@@ -9,11 +9,9 @@ TERMUX_PKG_DEPENDS="pipewire"
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BUILD_IN_SRC=true
 
-termux_step_pre_configure() {
-	termux_setup_rust
-}
-
 termux_step_make() {
+    termux_setup_rust
+    cargo update # Fix rust 1.73 incompatibility - can probably be removed when bumping version
 	cargo build --jobs $TERMUX_MAKE_PROCESSES --target $CARGO_TARGET_NAME --release
 }
 
