@@ -13,6 +13,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	LDFLAGS+=" -landroid-sysv-semaphore"
+	LDFLAGS+=" -landroid-sysv-semaphore -landroid-shmem"
 	autoreconf -fi
 }
