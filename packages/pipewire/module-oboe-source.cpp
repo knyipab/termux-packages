@@ -188,12 +188,12 @@ static void capture_stream_process(void *d)
 		numFrames = size / impl->frame_size;
 
 	    auto returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
-		if (oboe::Result(returnCode) == oboe::Result::OK)
+		if (returnCode == oboe::Result::OK) {
 			if (impl->stream_read_timeout == 0)
 				size = returnCode.value() * impl->frame_size;
-			if (returnCode.value() != numFrames)	
+			if (returnCode.value() != numFrames)
 				pw_log_debug("number of frames read: %d", returnCode.value());
-		else {
+		} else {
 			if (returnCode == oboe::Result::ErrorDisconnected)
 				open_oboe_stream(impl);
 			else
