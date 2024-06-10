@@ -13,7 +13,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	CPPFLAGS+=" -Wno-implicit-function-declaration"
 	LDFLAGS+=" -landroid-sysv-semaphore"
 	autoreconf -fi
 }
