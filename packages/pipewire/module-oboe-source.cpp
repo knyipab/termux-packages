@@ -108,7 +108,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 
 static const struct spa_dict_item module_props[] = {
 	{ PW_KEY_MODULE_AUTHOR, "Ronald Y" },
-	{ PW_KEY_MODULE_DESCRIPTION, "Oboe (Andoird) audio sink" },
+	{ PW_KEY_MODULE_DESCRIPTION, "Oboe (Andoird) audio source" },
 	{ PW_KEY_MODULE_USAGE, MODULE_USAGE },
 	{ PW_KEY_MODULE_VERSION, PACKAGE_VERSION },
 };
@@ -188,7 +188,7 @@ static void capture_stream_process(void *d)
 		numFrames = size / impl->frame_size;
 
 	    auto returnCode = impl->oboe_stream->read(data, numFrames, impl->stream_read_timeout);
-		if (returnCode == oboe::Result::OK)
+		if (oboe::Result(returnCode) == oboe::Result::OK)
 			if (impl->stream_read_timeout == 0)
 				size = returnCode.value() * impl->frame_size;
 			if (returnCode.value() != numFrames)	
