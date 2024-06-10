@@ -7,6 +7,7 @@ TERMUX_PKG_SRCURL=https://github.com/dimtpap/coppwr/archive/refs/tags/$TERMUX_PK
 TERMUX_PKG_SHA256=b6ed84f3313a0a0a76d0303605d1ed55aa4ea94adb713f810680c7bde0637a8e
 TERMUX_PKG_DEPENDS="pipewire"
 TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_pre_configure() {
 	termux_setup_rust
