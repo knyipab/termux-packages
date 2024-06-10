@@ -126,6 +126,21 @@ index 0d54cf9..9d7759e 100644
          #"tcp:[::]:9999"                    # IPv6 on all addresses
          #"tcp:127.0.0.1:8888"               # IPv4 on a single address
          #
+diff --git a/src/daemon/pipewire.conf.in b/src/daemon/pipewire.conf.in
+index 7114513..71c148a 100644
+--- a/src/daemon/pipewire.conf.in
++++ b/src/daemon/pipewire.conf.in
+@@ -225,6 +225,10 @@ context.modules = [
+         flags = [ ifexists nofail ]
+         condition = [ { module.jackdbus-detect = true } ]
+     }
++
++    # Oboe sink and source
++    { name = libpipewire-module-oboe-sink }
++    { name = libpipewire-module-oboe-source }
+ ]
+ 
+ context.objects = [
 diff --git a/src/modules/meson.build b/src/modules/meson.build
 index 922a384..cd74b6f 100644
 --- a/src/modules/meson.build
