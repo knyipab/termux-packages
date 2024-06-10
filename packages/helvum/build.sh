@@ -64,7 +64,7 @@ termux_setup_meson() {
 	echo "c = '$CC'" >> $TERMUX_MESON_CROSSFILE
 	echo "cmake = 'cmake'" >> $TERMUX_MESON_CROSSFILE
 	echo "cpp = '$CXX'" >> $TERMUX_MESON_CROSSFILE
-	echo "rust = 'rustc'" >> $TERMUX_MESON_CROSSFILE
+	echo "rust = '${HOME}/.cargo/bin/rustc'" >> $TERMUX_MESON_CROSSFILE
 	echo "ld = '$LD'" >> $TERMUX_MESON_CROSSFILE
 	echo "pkgconfig = '$PKG_CONFIG'" >> $TERMUX_MESON_CROSSFILE
 	echo "strip = '$STRIP'" >> $TERMUX_MESON_CROSSFILE
@@ -126,12 +126,13 @@ termux_setup_meson() {
 		echo "system = 'android'" >> $TERMUX_MESON_CROSSFILE
 	elif [ "$TERMUX_PACKAGE_LIBRARY" = "glibc" ]; then
 		echo "system = 'linux'" >> $TERMUX_MESON_CROSSFILE
-		fi
+	fi
 }
 
 
 termux_step_pre_configure() {
 	termux_setup_meson
+	termux_setup_rust
 
 	local _meson_buildtype="minsize"
 	local _meson_stripflag="--strip"
