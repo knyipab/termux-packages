@@ -1,0 +1,236 @@
+diff --git a/common/Jackdmp.cpp b/common/Jackdmp.cpp
+index 04e722b..45a5ba3 100644
+--- a/common/Jackdmp.cpp
++++ b/common/Jackdmp.cpp
+@@ -35,7 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ #include "JackConstants.h"
+ #include "JackPlatformPlug.h"
+ #ifdef __ANDROID__
+-#include "JackControlAPIAndroid.h"
++#include "../android/JackControlAPIAndroid.h"
+ #endif
+ 
+ #if defined(JACK_DBUS) && defined(__linux__)
+diff --git a/common/shm.h b/common/shm.h
+index 3e3276d..49b8dcb 100644
+--- a/common/shm.h
++++ b/common/shm.h
+@@ -89,7 +89,7 @@ extern "C"
+ #define SHM_NAME_MAX NAME_MAX
+ #endif
+     typedef char shm_name_t[SHM_NAME_MAX];
+-    typedef shm_name_t jack_shm_id_t;
++    typedef int	jack_shm_id_t;
+     typedef int jack_shm_fd_t;
+ 
+ #else
+diff --git a/common/wscript b/common/wscript
+index 178d4c1..720b28f 100644
+--- a/common/wscript
++++ b/common/wscript
+@@ -87,7 +87,7 @@ def build(bld):
+             'JackDebugClient.cpp',
+             'timestamps.c',
+             'promiscuous.c',
+-            '../posix/JackPosixThread.cpp',
++            '../android/JackAndroidThread.cpp',
+             '../posix/JackPosixProcessSync.cpp',
+             '../posix/JackPosixMutex.cpp',
+             '../posix/JackSocket.cpp',
+@@ -309,6 +309,7 @@ def build(bld):
+             '../posix/JackSocketNotifyChannel.cpp',
+             '../posix/JackSocketServerNotifyChannel.cpp',
+             '../posix/JackNetUnixSocket.cpp',
++            '../android/JackControlAPIAndroid.cpp',
+             ]
+ 
+     if bld.env['IS_FREEBSD']:
+@@ -397,7 +398,7 @@ def build(bld):
+         if bld.env['IS_LINUX']:
+             netlib.source += [
+                 '../posix/JackNetUnixSocket.cpp',
+-                '../posix/JackPosixThread.cpp',
++                '../android/JackAndroidThread.cpp',
+                 '../posix/JackPosixMutex.cpp',
+                 '../linux/JackLinuxTime.c',
+             ]
+diff --git a/linux/JackLinuxFutex.cpp b/linux/JackLinuxFutex.cpp
+index 29b1390..64b9aeb 100644
+--- a/linux/JackLinuxFutex.cpp
++++ b/linux/JackLinuxFutex.cpp
+@@ -34,6 +34,66 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ #define SYS_futex SYS_futex_time64
+ #endif
+ 
++
++static int shm_unlink(const char *name) {
++    size_t namelen;
++    char *fname;
++
++    /* Construct the filename.  */
++    while (name[0] == '/') ++name;
++
++    if (name[0] == '\0') {
++        /* The name "/" is not supported.  */
++        errno = EINVAL;
++        return -1;
++    }
++
++    namelen = strlen(name);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++
++    return unlink(fname);
++}
++
++static int shm_open(const char *name, int oflag, mode_t mode) {
++    size_t namelen;
++    char *fname;
++    int fd;
++
++    /* Construct the filename.  */
++    while (name[0] == '/') ++name;
++
++    if (name[0] == '\0') {
++        /* The name "/" is not supported.  */
++        errno = EINVAL;
++        return -1;
++    }
++
++    namelen = strlen(name);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++
++    fd = open(fname, oflag, mode);
++    if (fd != -1) {
++        /* We got a descriptor.  Now set the FD_CLOEXEC bit.  */
++        int flags = fcntl(fd, F_GETFD, 0);
++        flags |= FD_CLOEXEC;
++        flags = fcntl(fd, F_SETFD, flags);
++
++        if (flags == -1) {
++            /* Something went wrong.  We cannot return the descriptor.  */
++            int save_errno = errno;
++            close(fd);
++            fd = -1;
++            errno = save_errno;
++        }
++    }
++
++    return fd;
++}
++
+ namespace Jack
+ {
+ 
+diff --git a/linux/JackPlatformPlug_os.h b/linux/JackPlatformPlug_os.h
+index 60c9a58..cd0803a 100644
+--- a/linux/JackPlatformPlug_os.h
++++ b/linux/JackPlatformPlug_os.h
+@@ -30,7 +30,7 @@ namespace Jack
+     struct JackResult;
+ 
+     class JackPosixMutex;
+-    class JackPosixThread;
++    class JackAndroidThread;
+     class JackFifo;
+     class JackSocketServerChannel;
+     class JackSocketClientChannel;
+@@ -46,7 +46,7 @@ namespace Jack {typedef JackPosixMutex JackMutex; }
+ 
+ /* __JackPlatformThread__ */
+ #include "JackPosixThread.h"
+-namespace Jack { typedef JackPosixThread JackThread; }
++namespace Jack { typedef JackAndroidThread JackThread; }
+ 
+ /* __JackPlatformSynchro__  client activation */
+ /*
+diff --git a/linux/alsa/JackAlsaDriver.cpp b/linux/alsa/JackAlsaDriver.cpp
+index 0ac2919..2aa310f 100644
+--- a/linux/alsa/JackAlsaDriver.cpp
++++ b/linux/alsa/JackAlsaDriver.cpp
+@@ -40,7 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ #include "JackGraphManager.h"
+ #include "JackLockedEngine.h"
+ #ifdef __ANDROID__
+-#include "JackAndroidThread.h"
++#include "../android/JackAndroidThread.h"
+ #else
+ #include "JackPosixThread.h"
+ #endif
+@@ -362,7 +362,7 @@ int JackAlsaDriver::Open(jack_nframes_t nframes,
+     fPlaybackChannels = ((alsa_driver_t *)fDriver)->playback_nchannels;
+     if (JackServerGlobals::on_device_reservation_loop != NULL) {
+         device_reservation_loop_running = true;
+-        if (JackPosixThread::StartImp(&fReservationLoopThread, 0, 0, on_device_reservation_loop, NULL) != 0) {
++        if (JackAndroidThread::StartImp(&fReservationLoopThread, 0, 0, on_device_reservation_loop, NULL) != 0) {
+             device_reservation_loop_running = false;
+         }
+     }
+@@ -381,7 +381,7 @@ int JackAlsaDriver::Close()
+ 
+     if (device_reservation_loop_running) {
+         device_reservation_loop_running = false;
+-        JackPosixThread::StopImp(fReservationLoopThread);
++        JackAndroidThread::StopImp(fReservationLoopThread);
+     }
+ 
+     if (JackServerGlobals::on_device_release != NULL)
+diff --git a/posix/JackPosixThread.h b/posix/JackPosixThread.h
+index 599bf49..1d0fa32 100644
+--- a/posix/JackPosixThread.h
++++ b/posix/JackPosixThread.h
+@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ #ifndef __JackPosixThread__
+ #define __JackPosixThread__
+ 
++#ifdef __ANDROID__
++
++#include "../android/JackAndroidThread.h"
++
++#else
++
+ #include "JackThread.h"
+ #include <pthread.h>
+ 
+@@ -85,5 +91,6 @@ SERVER_EXPORT void ThreadExit();
+ 
+ } // end of namespace
+ 
++#endif
+ 
+ #endif
+diff --git a/posix/JackSystemDeps_os.h b/posix/JackSystemDeps_os.h
+index 18ea74c..6d12bad 100644
+--- a/posix/JackSystemDeps_os.h
++++ b/posix/JackSystemDeps_os.h
+@@ -41,4 +41,12 @@
+ 
+ #define JACK_DEBUG (getenv("JACK_CLIENT_DEBUG") && strcmp(getenv("JACK_CLIENT_DEBUG"), "on") == 0)
+ 
++#ifdef __ANDROID__
++
++/**
++ *  bionic c dependent functions, copied from ../android/JackSystemDeps_os.h
++ */
++#define pthread_setcanceltype(x,y)  (0)
++#endif
++
+ #endif
+diff --git a/wscript b/wscript
+index 86eb395..74bca20 100644
+--- a/wscript
++++ b/wscript
+@@ -423,8 +423,8 @@ def configure(conf):
+         conf.define('ADDON_DIR', conf.env['ADDON_DIR'])
+         conf.define('JACK_LOCATION', os.path.normpath(os.path.join(conf.env['PREFIX'], 'bin')))
+ 
+-    if not conf.env['IS_WINDOWS']:
+-        conf.define('USE_POSIX_SHM', 1)
++    # if not conf.env['IS_WINDOWS']:
++    #     conf.define('USE_POSIX_SHM', 1)
+     conf.define('JACKMP', 1)
+     if conf.env['BUILD_JACKDBUS']:
+         conf.define('JACK_DBUS', 1)
