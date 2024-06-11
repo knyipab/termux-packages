@@ -1,7 +1,7 @@
 TERMUX_SUBPKG_DESCRIPTION="pipewire - ALSA configuration"
 TERMUX_SUBPKG_INCLUDE="
-usr/lib/udev
-usr/share/alsa-card-profile
+lib/udev
+share/alsa-card-profile
 share/alsa/alsa.conf.d/50-pipewire.conf
 "
 

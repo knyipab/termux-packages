@@ -19,6 +19,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dexamples=disabled
 -Dpipewire-alsa=enabled
 -Dalsa=enabled
+-Dudev=enabled
 -Dudevrulesdir=$TERMUX_PREFIX/lib/udev/rules.d
 -Dpipewire-jack=enabled
 -Djack=enabled
