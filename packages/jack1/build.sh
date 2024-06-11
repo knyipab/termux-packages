@@ -7,7 +7,6 @@ TERMUX_PKG_VERSION=0.126.0
 TERMUX_PKG_GIT_BRANCH=$TERMUX_PKG_VERSION
 TERMUX_PKG_SRCURL=git+https://github.com/jackaudio/jack1
 TERMUX_PKG_CONFLICTS="jack2, pipewire-jack"
-TERMUX_PKG_PROVIDES="jack2, pipewire-jack"
 TERMUX_PKG_AUTO_UPDATE=true
 
 termux_step_pre_configure() {
