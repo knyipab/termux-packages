@@ -1,4 +1,4 @@
-TERMUX_SUBPKG_DESCRIPTION="Tools for cross build on the host (NOT for Termux)"
+TERMUX_SUBPKG_DESCRIPTION="pipewire - JACK replacement"
 TERMUX_SUBPKG_INCLUDE="
 bin/pw-jack
 include/jack

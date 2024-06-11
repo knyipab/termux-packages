@@ -21,6 +21,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dexamples=disabled
 -Dpipewire-alsa=enabled
 -Dalsa=enabled
+-Dudevrulesdir=$TERMUX_PREFIX/lib/udev/rules.d
 -Dpipewire-jack=enabled
 -Djack=enabled
 -Djack-devel=true
@@ -63,4 +64,10 @@ termux_step_pre_configure() {
 
 	sed -i "s/'-Werror=strict-prototypes',//" ${TERMUX_PKG_SRCDIR}/meson.build
 	CFLAGS+=" -Dindex=strchr -Drindex=strrchr"
+}
+
+termux_step_post_make_install() {
+	mkdir -p "$TERMUX_PREFIX/etc/alsa/conf.d"
+	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/99-pipewire-default.conf
+	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/50-pipewire.conf
 }
