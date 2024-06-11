@@ -10,6 +10,7 @@ TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-static
 --with-versioned=no
+--with-tmpdir=$TERMUX_PREFIX/tmp
 "
 
 termux_step_pre_configure() {
