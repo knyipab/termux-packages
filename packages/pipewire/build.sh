@@ -19,7 +19,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dexamples=disabled
 -Dpipewire-alsa=enabled
 -Dalsa=enabled
--Dudev=enabled
 -Dudevrulesdir=$TERMUX_PREFIX/lib/udev/rules.d
 -Dpipewire-jack=enabled
 -Djack=enabled
@@ -66,6 +65,7 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_make_install() {
+	mkdir -p "$TERMUX_PREFIX/etc/pipewire/pipewire-pulse.conf.d"
 	mkdir -p "$TERMUX_PREFIX/etc/alsa/conf.d"
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/99-pipewire-default.conf
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/50-pipewire.conf
