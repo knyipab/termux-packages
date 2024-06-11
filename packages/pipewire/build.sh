@@ -13,8 +13,6 @@ TERMUX_PKG_AUTO_UPDATE=true
 
 # 'media-session' session-managers is disabled as it requires alsa.
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
--Dman=enabled
--Ddocs=enabled
 -Dgstreamer=disabled
 -Dgstreamer-device-provider=disabled
 -Dtests=disabled
