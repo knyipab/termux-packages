@@ -1,18 +1,11 @@
-TERMUX_PKG_HOMEPAGE=https://jackaudio.org/
-TERMUX_PKG_DESCRIPTION="jack1 (non-funcitoning)"
+TERMUX_PKG_HOMEPAGE=https://github.com/termux/termux-packages
+TERMUX_PKG_DESCRIPTION="A metapackage that provides JACK Audio Connection Kit"
+TERMUX_PKG_LICENSE="Public Domain"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_LICENSE="GPL-2.0, LGPL-2.0"
-TERMUX_PKG_DEPENDS="libdb, libandroid-sysv-semaphore, libandroid-shmem"
-TERMUX_PKG_VERSION=0.126.0
-TERMUX_PKG_GIT_BRANCH=$TERMUX_PKG_VERSION
-TERMUX_PKG_SRCURL=git+https://github.com/jackaudio/jack1
-TERMUX_PKG_AUTO_UPDATE=true
-
-termux_step_pre_configure() {
-	cd ${TERMUX_PKG_SRCDIR}
-	git submodule update --init --recursive
-	${TERMUX_PKG_SRCDIR}/autogen.sh &&
-		cd ${TERMUX_PKG_SRCDIR} &&
-		autoupdate
-	LDFLAGS+=" -landroid-shmem -landroid-sysv-semaphore"
-}
+TERMUX_PKG_VERSION=0.0.1
+TERMUX_PKG_AUTO_UPDATE=false
+TERMUX_PKG_DEPENDS="pipewire-jack | jack1 | jack2"
+TERMUX_PKG_ANTI_BUILD_DEPENDS="pipewire-jack, jack1, jack2"
+TERMUX_PKG_PLATFORM_INDEPENDENT=true
+TERMUX_PKG_SKIP_SRC_EXTRACT=true
+TERMUX_PKG_METAPACKAGE=true
