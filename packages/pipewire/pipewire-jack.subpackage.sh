@@ -6,3 +6,5 @@ lib/libjack*
 lib/pkgconfig/jack.pc
 share/pipewire/jack.conf
 "
+TERMUX_SUBPKG_CONFLICTS="jack1, jack2"
+TERMUX_SUBPKG_PROVIDES="jack1, jack2"
