@@ -8,7 +8,7 @@ TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL="https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/${TERMUX_PKG_VERSION}/pipewire-${TERMUX_PKG_VERSION}.tar.bz2"
 TERMUX_PKG_SHA256=18ecba7174bf9f5da39cdf749e6cf260bd09b6831ba2f8165b20771cd10af4e5
 TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, readline, pulseaudio, alsa-lib, oboe"
-# TERMUX_PKG_BUILD_DEPENDS="jack2"
+TERMUX_PKG_BUILD_DEPENDS="jack2"
 TERMUX_PKG_AUTO_UPDATE=true
 
 # 'media-session' session-managers is disabled as it requires alsa.
@@ -20,9 +20,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dpipewire-alsa=enabled
 -Dalsa=enabled
 -Dpipewire-jack=enabled
--Djack=disabled
+-Djack=enabled
 -Djack-devel=true
--Dlibjack-path=$TERMUX_PREFIX/lib/pipewire/jack
 -Ddbus=disabled
 -Dsession-managers=['wireplumber']
 -Dffmpeg=enabled
@@ -68,7 +67,7 @@ termux_step_post_make_install() {
 	mkdir -p "$TERMUX_PREFIX/etc/alsa/conf.d"
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/99-pipewire-default.conf
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/50-pipewire.conf
-	for file in "$PREFIX/lib/pipewire/jack/"*; do
+	for file in "$PREFIX"/lib/pipewire*/jack/*; do
 		ln -sft "$PREFIX/lib" "$file"
 	done
 	for file in "$PREFIX"/lib/libjack*.so; do
