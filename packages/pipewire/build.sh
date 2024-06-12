@@ -72,6 +72,6 @@ termux_step_post_make_install() {
 		ln -sft "$PREFIX/lib" "$file"
 	done
 	for file in "$PREFIX"/lib/libjack*.so; do
-		ln -srf "$file" "$file.so.0"
+		ln -srf "$file" "$file.0"
 	done
 }
