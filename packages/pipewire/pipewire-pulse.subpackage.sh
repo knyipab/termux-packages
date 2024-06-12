@@ -1,4 +1,4 @@
-TERMUX_SUBPKG_DESCRIPTION="pipewire - ALSA configuration"S
+TERMUX_SUBPKG_DESCRIPTION="pipewire - PulseAudio server"
 TERMUX_SUBPKG_INCLUDE="
 bin/pipewire-pulse
 etc/pipewire/pipewire-pulse.conf.d

@@ -19,11 +19,10 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dexamples=disabled
 -Dpipewire-alsa=enabled
 -Dalsa=enabled
--Dudevrulesdir=$TERMUX_PREFIX/lib/udev/rules.d
 -Dpipewire-jack=enabled
 -Djack=enabled
 -Djack-devel=true
--Dlibjack-path=$TERMUX_PREFIX/lib
+-Dlibjack-path=$TERMUX_PREFIX/lib/pipewire/jack
 -Ddbus=disabled
 -Dsession-managers=['wireplumber']
 -Dffmpeg=enabled
@@ -69,6 +68,9 @@ termux_step_post_make_install() {
 	mkdir -p "$TERMUX_PREFIX/etc/alsa/conf.d"
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/99-pipewire-default.conf
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/50-pipewire.conf
+	for file in "$PREFIX/lib/pipewire/jack"; do
+		ln -st "$PREFIX/lib" "$file"
+	done
 	for file in "$PREFIX/lib/libjack*.so"; do
 		ln -sr "$file" "$file.so.0"
 	done
