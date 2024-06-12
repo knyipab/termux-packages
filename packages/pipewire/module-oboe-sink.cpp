@@ -89,7 +89,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define DEFAULT_RATE 48000
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_POSITION "[ FL FR ]"
-#define DEFAULT_STREAM_WRITE_TIMEOUT 0
+#define DEFAULT_STREAM_WRITE_TIMEOUT 5000
 
 #define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
 			"( node.name=<name of the nodes> ) "					\

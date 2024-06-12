@@ -1,16 +1,11 @@
 diff --git a/meson.build b/meson.build
-index cda6011..4d423b7 100644
+index cda6011..de16ef0 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -407,6 +407,15 @@ else
+@@ -407,6 +407,10 @@ else
    summary({'WebRTC Echo Canceling < 1.0': webrtc_dep.found()}, bool_yn: true, section: 'Misc dependencies')
  endif
  
-+# On Android, AAudio and Oboe is required
-+libaaudio_dep = (host_machine.system() == 'android'
-+    ? cc.find_library('aaudio', required : true)
-+    : dependency('', required: false))
-+
 +liboboe_dep = (host_machine.system() == 'android'
 +    ? cc.find_library('oboe', required : true)
 +    : dependency('', required: false))
@@ -104,20 +99,10 @@ index 55a152e..ef29c33 100644
  		spa_log_error(state->log, "can't create log file");
  		return -errno;
 diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
-index 0d54cf9..74b8711 100644
+index 0d54cf9..d7ecfd7 100644
 --- a/src/daemon/pipewire-pulse.conf.in
 +++ b/src/daemon/pipewire-pulse.conf.in
-@@ -61,7 +61,8 @@ context.exec = [
- #      args = "<module-name> <module-args>"
- #      ( flags = [ nofail ] )
- pulse.cmd = [
--    { cmd = "load-module" args = "module-always-sink" flags = [ ] }
-+    { cmd = "load-module" args = "module-oboe-sink" flags = [ ] }
-+    { cmd = "load-module" args = "module-oboe-source" flags = [ ] }
-     { cmd = "load-module" args = "module-device-manager" flags = [ ] }
-     { cmd = "load-module" args = "module-device-restore" flags = [ ] }
-     { cmd = "load-module" args = "module-stream-restore" flags = [ ] }
-@@ -90,7 +91,7 @@ pulse.properties = {
+@@ -90,7 +90,7 @@ pulse.properties = {
      server.address = [
          "unix:native"
          #"unix:/tmp/something"              # absolute paths may be used
@@ -150,44 +135,22 @@ index 7114513..9de30a4 100644
  
  context.objects = [
 diff --git a/src/modules/meson.build b/src/modules/meson.build
-index 922a384..cd74b6f 100644
+index 922a384..6b6322e 100644
 --- a/src/modules/meson.build
 +++ b/src/modules/meson.build
-@@ -4,6 +4,10 @@ subdir('spa')
+@@ -4,6 +4,8 @@ subdir('spa')
  # The list of "main" source files for modules, the ones that have the
  # doxygen documentation
  module_sources = [
-+  'module-aaudio-source.c',
-+  'module-aaudio-sink.c',
 +  'module-oboe-sink.cpp',
-+  'module-aaudio-sink.cpp',
++  'module-oboe-source.cpp',
    'module-access.c',
    'module-adapter.c',
    'module-avb.c',
-@@ -49,6 +53,45 @@ module_sources = [
+@@ -49,6 +51,25 @@ module_sources = [
    'module-x11-bell.c',
  ]
  
-+if libaaudio_dep.found()
-+  pipewire_module_aaudio_sink = shared_library('pipewire-module-aaudio-sink',
-+    [ 'module-aaudio-sink.c' ],
-+    include_directories : [configinc],
-+    install : true,
-+    install_dir : modules_install_dir,
-+    install_rpath: modules_install_dir,
-+    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
-+  )
-+
-+  pipewire_module_aaudio_source = shared_library('pipewire-module-aaudio-source',
-+    [ 'module-aaudio-source.c' ],
-+    include_directories : [configinc],
-+    install : true,
-+    install_dir : modules_install_dir,
-+    install_rpath: modules_install_dir,
-+    dependencies : [spa_dep, mathlib, dl_lib, pipewire_dep, libaaudio_dep],
-+  )
-+endif
-+
 +if liboboe_dep.found()
 +  pipewire_module_oboe_sink = shared_library('pipewire-module-oboe-sink',
 +    [ 'module-oboe-sink.cpp' ],
@@ -210,12 +173,10 @@ index 922a384..cd74b6f 100644
  pipewire_module_access_deps = [spa_dep, mathlib, dl_lib, pipewire_dep]
  if flatpak_support
    pipewire_module_access_deps += glib2_dep
-@@ -376,6 +419,10 @@ pipewire_module_protocol_pulse_sources = [
+@@ -376,6 +397,8 @@ pipewire_module_protocol_pulse_sources = [
    'module-protocol-pulse/stream.c',
    'module-protocol-pulse/utils.c',
    'module-protocol-pulse/volume.c',
-+  'module-protocol-pulse/modules/module-aaudio-sink.c',
-+  'module-protocol-pulse/modules/module-aaudio-source.c',
 +  'module-protocol-pulse/modules/module-oboe-sink.c',
 +  'module-protocol-pulse/modules/module-oboe-source.c',
    'module-protocol-pulse/modules/module-alsa-sink.c',
