@@ -68,10 +68,10 @@ termux_step_post_make_install() {
 	mkdir -p "$TERMUX_PREFIX/etc/alsa/conf.d"
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/99-pipewire-default.conf
 	ln -st "$TERMUX_PREFIX/etc/alsa/conf.d" $TERMUX_PREFIX/share/alsa/alsa.conf.d/50-pipewire.conf
-	for file in "$PREFIX/lib/pipewire/jack/*"; do
+	for file in "$PREFIX/lib/pipewire/jack/"*; do
 		ln -st "$PREFIX/lib" "$file"
 	done
-	for file in "$PREFIX/lib/libjack*.so"; do
+	for file in "$PREFIX"/lib/libjack*.so; do
 		ln -sr "$file" "$file.so.0"
 	done
 }
