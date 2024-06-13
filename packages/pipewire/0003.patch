@@ -47,10 +47,36 @@ index 4ba25ee..7c3cacd 100644
  		pw_log_error("can't create log file: %m");
  		err = -errno;
 diff --git a/pipewire-jack/src/pipewire-jack.c b/pipewire-jack/src/pipewire-jack.c
-index 5a17d00..0722dd3 100644
+index 5a17d00..b9abfd1 100644
 --- a/pipewire-jack/src/pipewire-jack.c
 +++ b/pipewire-jack/src/pipewire-jack.c
-@@ -7131,8 +7131,14 @@ int jack_client_kill_thread(jack_client_t* client, jack_native_thread_t thread)
+@@ -7053,6 +7053,11 @@ int jack_drop_real_time_scheduling (jack_native_thread_t thread)
+ 	return spa_thread_utils_drop_rt(globals.thread_utils, t);
+ }
+ 
++static void thread_signal_handler(int signum)
++{
++	pthread_exit(0);
++}
++
+ /**
+  * Create a thread for JACK or one of its clients.  The thread is
+  * created executing @a start_routine with @a arg as its sole
+@@ -7081,6 +7086,13 @@ int jack_client_create_thread (jack_client_t* client,
+ 	int res = 0;
+ 	struct spa_thread *thr;
+ 
++	struct sigaction actions;
++	memset(&actions, 0, sizeof(actions));
++	sigemptyset(&actions.sa_mask);
++	actions.sa_flags = 0;
++	actions.sa_handler = thread_signal_handler;
++	sigaction(SIGUSR2, &actions, NULL);
++
+ 	return_val_if_fail(client != NULL, -EINVAL);
+ 	return_val_if_fail(thread != NULL, -EINVAL);
+ 	return_val_if_fail(start_routine != NULL, -EINVAL);
+@@ -7131,8 +7143,14 @@ int jack_client_kill_thread(jack_client_t* client, jack_native_thread_t thread)
  
  	return_val_if_fail(client != NULL, -EINVAL);
  
