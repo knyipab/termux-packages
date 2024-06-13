@@ -10,7 +10,7 @@ TERMUX_PKG_SRCURL=(https://github.com/audacity/audacity/archive/Audacity-${TERMU
                    https://www.ffmpeg.org/releases/ffmpeg-${_FFMPEG_VERSION}.tar.xz)
 TERMUX_PKG_SHA256=(cdb4800c8e9d1d4ca19964caf8d24000f80286ebd8a4db566c2622449744c099
                    6c5b6c195e61534766a0b5fe16acc919170c883362612816d0a1c7f4f947006e)
-TERMUX_PKG_DEPENDS="gdk-pixbuf, glib, gtk3, libc++, libexpat, libflac, libmp3lame, libogg, libsndfile, libsoundtouch, libsoxr, libvorbis, wxwidgets"
+TERMUX_PKG_DEPENDS="gdk-pixbuf, glib, gtk3, libc++, libexpat, libflac, libmp3lame, libogg, libsndfile, libsoundtouch, libsoxr, libvorbis, wxwidgets, alsa-lib"
 # Support for FFmpeg 5.0 is not backported:
 # https://github.com/audacity/audacity/issues/2445
 TERMUX_PKG_SUGGESTS="audacity-ffmpeg"
