@@ -12,7 +12,7 @@ TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_DEBUG_BUILD=true
 
 termux_step_configure() {
-	LDFLAGS+=" -landroid-shmem -landroid-posix-semaphore"
+	LDFLAGS+=" -landroid-posix-semaphore"
 	# TODO: remove --debug
 	python3 ./waf configure --alsa --classic --prefix="$TERMUX_PREFIX" --htmldir=$TERMUX_PREFIX/share/doc/jack2/html --firewire=no --debug
 }
