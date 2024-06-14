@@ -1,5 +1,5 @@
 diff --git a/common/shm.c b/common/shm.c
-index b1e7fc7..c34c859 100644
+index b1e7fc7..94e891c 100644
 --- a/common/shm.c
 +++ b/common/shm.c
 @@ -50,7 +50,7 @@
@@ -104,3 +104,97 @@ index b1e7fc7..c34c859 100644
      return 0;
  }
  
+@@ -705,6 +686,66 @@ jack_attach_lib_shm_read (jack_shm_info_t* si)
+ 
+ #ifdef USE_POSIX_SHM
+ 
++
++static int shm_unlink(const char *name) {
++    size_t namelen;
++    char *fname;
++
++    /* Construct the filename.  */
++    while (name[0] == '/') ++name;
++
++    if (name[0] == '\0') {
++        /* The name "/" is not supported.  */
++        errno = EINVAL;
++        return -1;
++    }
++
++    namelen = strlen(name);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++
++    return unlink(fname);
++}
++
++static int shm_open(const char *name, int oflag, mode_t mode) {
++    size_t namelen;
++    char *fname;
++    int fd;
++
++    /* Construct the filename.  */
++    while (name[0] == '/') ++name;
++
++    if (name[0] == '\0') {
++        /* The name "/" is not supported.  */
++        errno = EINVAL;
++        return -1;
++    }
++
++    namelen = strlen(name);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++
++    fd = open(fname, oflag, mode);
++    if (fd != -1) {
++        /* We got a descriptor.  Now set the FD_CLOEXEC bit.  */
++        int flags = fcntl(fd, F_GETFD, 0);
++        flags |= FD_CLOEXEC;
++        flags = fcntl(fd, F_SETFD, flags);
++
++        if (flags == -1) {
++            /* Something went wrong.  We cannot return the descriptor.  */
++            int save_errno = errno;
++            close(fd);
++            fd = -1;
++            errno = save_errno;
++        }
++    }
++
++    return fd;
++}
++
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  * POSIX interface-dependent functions
+  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+diff --git a/common/shm.h b/common/shm.h
+index 49b8dcb..3f0cf3a 100644
+--- a/common/shm.h
++++ b/common/shm.h
+@@ -70,6 +70,7 @@ extern "C"
+ #endif
+     typedef char shm_name_t[SHM_NAME_MAX];
+     typedef shm_name_t jack_shm_id_t;
++    typedef int jack_shm_fd_t;
+ 
+ #elif WIN32
+ #define NAME_MAX 255
+diff --git a/wscript b/wscript
+index c77d2fb..09b0411 100644
+--- a/wscript
++++ b/wscript
+@@ -423,8 +423,8 @@ def configure(conf):
+         conf.define('ADDON_DIR', conf.env['ADDON_DIR'])
+         conf.define('JACK_LOCATION', os.path.normpath(os.path.join(conf.env['PREFIX'], 'bin')))
+ 
+-    # if not conf.env['IS_WINDOWS']:
+-    #     conf.define('USE_POSIX_SHM', 1)
++    if not conf.env['IS_WINDOWS']:
++        conf.define('USE_POSIX_SHM', 1)
+     conf.define('JACKMP', 1)
+     if conf.env['BUILD_JACKDBUS']:
+         conf.define('JACK_DBUS', 1)
