@@ -1,5 +1,5 @@
 diff --git a/common/shm.c b/common/shm.c
-index b1e7fc7..94e891c 100644
+index b1e7fc7..765bb13 100644
 --- a/common/shm.c
 +++ b/common/shm.c
 @@ -50,7 +50,7 @@
@@ -104,10 +104,11 @@ index b1e7fc7..94e891c 100644
      return 0;
  }
  
-@@ -705,6 +686,66 @@ jack_attach_lib_shm_read (jack_shm_info_t* si)
+@@ -705,6 +686,67 @@ jack_attach_lib_shm_read (jack_shm_info_t* si)
  
  #ifdef USE_POSIX_SHM
  
++
 +
 +static int shm_unlink(const char *name) {
 +    size_t namelen;
@@ -123,9 +124,9 @@ index b1e7fc7..94e891c 100644
 +    }
 +
 +    namelen = strlen(name);
-+    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
-+    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
-+    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
 +
 +    return unlink(fname);
 +}
@@ -145,9 +146,9 @@ index b1e7fc7..94e891c 100644
 +    }
 +
 +    namelen = strlen(name);
-+    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
-+    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
-+    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
 +
 +    fd = open(fname, oflag, mode);
 +    if (fd != -1) {
@@ -183,6 +184,36 @@ index 49b8dcb..3f0cf3a 100644
  
  #elif WIN32
  #define NAME_MAX 255
+diff --git a/linux/JackLinuxFutex.cpp b/linux/JackLinuxFutex.cpp
+index 9f14715..64b9aeb 100644
+--- a/linux/JackLinuxFutex.cpp
++++ b/linux/JackLinuxFutex.cpp
+@@ -49,9 +49,9 @@ static int shm_unlink(const char *name) {
+     }
+ 
+     namelen = strlen(name);
+-    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
+-    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
+-    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
+ 
+     return unlink(fname);
+ }
+@@ -71,9 +71,9 @@ static int shm_open(const char *name, int oflag, mode_t mode) {
+     }
+ 
+     namelen = strlen(name);
+-    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
+-    memcpy(fname, "@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1);
+-    memcpy(fname + sizeof("@TERMUX_PREFIX@@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
++    fname = (char *) alloca(sizeof("@TERMUX_PREFIX@/tmp/") - 1 + namelen + 1);
++    memcpy(fname, "@TERMUX_PREFIX@/tmp/", sizeof("@TERMUX_PREFIX@/tmp/") - 1);
++    memcpy(fname + sizeof("@TERMUX_PREFIX@/tmp/") - 1, name, namelen + 1);
+ 
+     fd = open(fname, oflag, mode);
+     if (fd != -1) {
 diff --git a/wscript b/wscript
 index c77d2fb..09b0411 100644
 --- a/wscript
