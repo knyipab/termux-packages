@@ -209,7 +209,7 @@ index 922a384..6b6322e 100644
    'module-protocol-pulse/modules/module-alsa-source.c',
    'module-protocol-pulse/modules/module-always-sink.c',
 diff --git a/src/modules/module-protocol-native.c b/src/modules/module-protocol-native.c
-index 245974e..ce00156 100644
+index 245974e..09ec12b 100644
 --- a/src/modules/module-protocol-native.c
 +++ b/src/modules/module-protocol-native.c
 @@ -710,10 +710,30 @@ exit:
@@ -223,7 +223,7 @@ index 245974e..ce00156 100644
 +        (f = fopen("@TERMUX_PREFIX@/var/lib/dbus/machine-id", "re"))) {
 +        char *ln = calloc(1, 34), *r;
 +
-+        r = fgets(ln, sizeof(ln)-1, f);
++        r = fgets(ln, 34-1, f);
 +        fclose(f);
 +
 +        pw_strip(ln, "\n");
