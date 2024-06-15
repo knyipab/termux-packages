@@ -152,9 +152,11 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 		pw_impl_module_schedule_destroy(impl->module);
 		break;
 	case PW_STREAM_STATE_PAUSED:
-		impl->oboe_stream->requestPause();
+		impl->oboe_stream->requestStop();
+		impl->oboe_stream->waitForStateChange(oboe::StreamState::Stopping, NULL, 1000 * NANOS_PER_MILLISECOND);
 	case PW_STREAM_STATE_STREAMING:
 		impl->oboe_stream->requestStart();
+		impl->oboe_stream->waitForStateChange(oboe::StreamState::Starting, NULL, 1000 * NANOS_PER_MILLISECOND);
 		break;
 	default:
 		break;
