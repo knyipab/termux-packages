@@ -3,15 +3,15 @@ TERMUX_PKG_DESCRIPTION="A professional digital workstation for working with audi
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="8.6"
-TERMUX_PKG_REVISION=2
+TERMUX_PKG_REVISION=3
 TERMUX_PKG_SRCURL=git+https://github.com/Ardour/ardour
 TERMUX_PKG_GIT_BRANCH=$TERMUX_PKG_VERSION
-TERMUX_PKG_DEPENDS="aubio, fftw, fontconfig, gdk-pixbuf, glib, gtk2, gtkmm2, libandroid-execinfo, libarchive, libatkmm-1.6, libc++, libcairo, libcairomm-1.0, libcurl, libglibmm-2.4, liblo, liblrdf, libpangomm-1.4, libsamplerate, libsigc++-2.0, libsndfile, libusb, libwebsockets, libx11, libxml2, lilv, pango, pulseaudio, rubberband, suil, taglib, vamp-plugin-sdk"
+TERMUX_PKG_DEPENDS="alsa-lib, aubio, fftw, fontconfig, gdk-pixbuf, glib, gtk2, gtkmm2, jack, libandroid-execinfo, libarchive, libatkmm-1.6, libc++, libcairo, libcairomm-1.0, libcurl, libglibmm-2.4, liblo, liblrdf, libpangomm-1.4, libsamplerate, libsigc++-2.0, libsndfile, libusb, libwebsockets, libx11, libxml2, lilv, pango, pulseaudio, rubberband, suil, taglib, vamp-plugin-sdk"
 TERMUX_PKG_BUILD_DEPENDS="boost, boost-headers"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
---with-backends=dummy,pulseaudio
+--with-backends=dummy,pulseaudio,jack,alsa
 --no-fpu-optimization
 --freedesktop
 --no-nls
