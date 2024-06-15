@@ -91,8 +91,7 @@ PW_LOG_TOPIC_STATIC(mod_topic, "mod." NAME);
 #define DEFAULT_POSITION "[ FL FR ]"
 #define DEFAULT_STREAM_WRITE_TIMEOUT 5000
 
-#define MODULE_USAGE	"( node.latency=<latency as fraction> ) "				\
-			"( node.name=<name of the nodes> ) "					\
+#define MODULE_USAGE	"( node.name=<name of the nodes> ) "					\
 			"( node.description=<description of the nodes> ) "			\
 			"( audio.format=<format, S16LE or F32LE, default:" DEFAULT_FORMAT "> ) "			\
 			"( audio.rate=<sample rate, default: " SPA_STRINGIFY(DEFAULT_RATE) "> ) "			\
@@ -153,7 +152,9 @@ static void stream_state_changed(void *d, enum pw_stream_state old,
 		pw_impl_module_schedule_destroy(impl->module);
 		break;
 	case PW_STREAM_STATE_PAUSED:
+		impl->oboe_stream->requestPause();
 	case PW_STREAM_STATE_STREAMING:
+		impl->oboe_stream->requestStart();
 		break;
 	default:
 		break;

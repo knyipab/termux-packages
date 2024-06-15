@@ -148,10 +148,6 @@ static int module_oboe_sink_prepare(struct module * const module)
 		goto out;
 	}
 
-	if ((str = pw_properties_get(props, "node_latency")) != NULL) {
-		pw_properties_set(oboe_props, "node.latency", str);
-		pw_properties_set(props, "node_latency", NULL);
-	}
 	if ((str = pw_properties_get(props, "node_name")) != NULL) {
 		pw_properties_set(oboe_props, "node.name", str);
 		pw_properties_set(props, "node_name", NULL);
