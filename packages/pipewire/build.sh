@@ -10,6 +10,8 @@ TERMUX_PKG_SHA256=18ecba7174bf9f5da39cdf749e6cf260bd09b6831ba2f8165b20771cd10af4
 TERMUX_PKG_DEPENDS="ffmpeg, glib, libc++, liblua54, libopus, libsndfile, libwebrtc-audio-processing, lilv, ncurses, openssl, readline, pulseaudio, alsa-lib, oboe"
 TERMUX_PKG_BUILD_DEPENDS="jack2"
 TERMUX_PKG_AUTO_UPDATE=true
+# TODO: remove TERMUX_DEBUG_BUILD
+TERMUX_DEBUG_BUILD=true
 
 # 'media-session' session-managers is disabled as it requires alsa.
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
