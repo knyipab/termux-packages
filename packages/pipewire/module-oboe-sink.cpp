@@ -143,7 +143,7 @@ static void stream_destroy(void *d)
 static void stream_state_changed(void *d, enum pw_stream_state old,
 		enum pw_stream_state state, const char *error)
 {
-	pw_log_info("oboe-source stream state changed, pw_stream_state = %d", state);
+	pw_log_info("oboe-sink stream state changed, pw_stream_state = %d", state);
 	struct impl *impl = (struct impl *)d;
 	switch (state) {
 	case PW_STREAM_STATE_ERROR:
