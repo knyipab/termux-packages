@@ -10,6 +10,7 @@ TERMUX_PKG_DEPENDS="alsa-lib, aubio, fftw, fontconfig, gdk-pixbuf, glib, gtk2, g
 TERMUX_PKG_BUILD_DEPENDS="boost, boost-headers, jack2"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_DEBUG_BUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-backends=dummy,pulseaudio,jack,alsa
 --no-fpu-optimization
