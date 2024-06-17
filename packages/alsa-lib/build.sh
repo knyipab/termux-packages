@@ -12,12 +12,14 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-versioned=no
 --disable-pcm
 --disable-ucm
+--disable-topology
 --with-alsa-devdir=$TERMUX_PREFIX/dev/snd
 --with-aload-devdir=$TERMUX_PREFIX/dev
 --with-tmpdir=$TERMUX_PREFIX/tmp
 "
 
 termux_step_pre_configure() {
+	# pcm interface uses sysv
 	# -landroid-shmem is for packages depending on alsa-lib
 	LDFLAGS+=" -landroid-sysv-semaphore -landroid-shmem"
 	autoreconf -fi
