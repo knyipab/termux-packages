@@ -11,6 +11,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-static
 --with-versioned=no
 --disable-pcm
+--disable-ucm
 --with-alsa-devdir=$TERMUX_PREFIX/dev/snd
 --with-aload-devdir=$TERMUX_PREFIX/dev
 --with-tmpdir=$TERMUX_PREFIX/tmp
