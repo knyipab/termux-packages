@@ -11,7 +11,6 @@ TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_configure() {
 	LDFLAGS+=" -landroid-posix-semaphore"
-	CFLAGS+=" -DJACK_ANDROID_REALTIME_SCHED"
 	python3 ./waf configure --alsa --classic --prefix="$TERMUX_PREFIX" --htmldir=$TERMUX_PREFIX/share/doc/jack2/html --firewire=no
 }
 
