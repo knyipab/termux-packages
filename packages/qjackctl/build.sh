@@ -10,4 +10,4 @@ TERMUX_PKG_BUILD_DEPENDS="qt6-qtbase-cross-tools, qt6-qttools-cross-tools"
 TERMUX_PKG_AUTO_UPDATE=true
 # TODO: enable system tray and xunique below line when QSharedMemoryPosix leakage issue is fixed by implementing the libandroid-sysv-semaphore for Android 14+ (https://github.com/termux/termux-packages/issues/20571)
 # TODO: enable alsa seq when userspace seq server is available
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-DCONFIG_SYSTEM_TRAY=no -DCONFIG_XUNIQUE=no -DCONFIG_ALSA_SEQ=no"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-DQT_HOST_PATH=$TERMUX_PREFIX/opt/qt6/cross/lib/qt6 -DCONFIG_SYSTEM_TRAY=no -DCONFIG_XUNIQUE=no -DCONFIG_ALSA_SEQ=no"
