@@ -15,7 +15,7 @@ termux_step_configure() {
 }
 
 termux_step_make() {
-	python3 ./waf build -j $TERMUX_MAKE_PROCESSES
+	python3 ./waf build -j $TERMUX_PKG_MAKE_PROCESSES
 }
 
 termux_step_make_install() {
