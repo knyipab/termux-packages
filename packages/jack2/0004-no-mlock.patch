@@ -1,0 +1,18 @@
+diff --git a/posix/JackShmMem_os.h b/posix/JackShmMem_os.h
+index b572342..5e71b51 100644
+--- a/posix/JackShmMem_os.h
++++ b/posix/JackShmMem_os.h
+@@ -24,9 +24,9 @@
+ #include <sys/types.h>
+ #include <sys/mman.h>
+ 
+-#define CHECK_MLOCK(ptr, size) (mlock((ptr), (size)) == 0)
+-#define CHECK_MUNLOCK(ptr, size) (munlock((ptr), (size)) == 0)
+-#define CHECK_MLOCKALL() (mlockall(MCL_CURRENT | MCL_FUTURE) == 0)
+-#define CHECK_MUNLOCKALL() (munlockall() == 0)
++#define CHECK_MLOCK(ptr, size) (TRUE)
++#define CHECK_MUNLOCK(ptr, size) (TRUE)
++#define CHECK_MLOCKALL() (TRUE)
++#define CHECK_MUNLOCKALL() (TRUE)
+ 
+ #endif
