@@ -10,17 +10,15 @@ TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-static
 --with-versioned=no
---disable-pcm
---disable-ucm
---disable-topology
---with-alsa-devdir=$TERMUX_PREFIX/dev/snd
---with-aload-devdir=$TERMUX_PREFIX/dev
 --with-tmpdir=$TERMUX_PREFIX/tmp
 "
 
 termux_step_pre_configure() {
-	# pcm interface uses sysv
-	# -landroid-shmem is for packages depending on alsa-lib
+	# pcm interface uses sysv semaphore which is broken on Android 14+ (issue #20514)
+	# Nonetheless, it is still enabled because:
+	# 1. probably never called because Android has no /dev/snd/pcm* device
+	# 2. still required for other packages in compile time, e.g. pipewire-alsa
+	# -landroid-shmem is for depending packages in compile time
 	LDFLAGS+=" -landroid-sysv-semaphore -landroid-shmem"
 	autoreconf -fi
 }
