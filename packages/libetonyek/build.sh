@@ -9,8 +9,6 @@ TERMUX_PKG_DEPENDS="libxml2, libwpd, librevenge, liblangtag, zlib"
 TERMUX_PKG_BUILD_DEPENDS="boost, cppunit, glm, mdds"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-mdds=2.1"
 
-# TODO: detect Archlinux update
-
 termux_step_pre_configure() {
 	# avoid duplicated symbol errors
 	CFLAGS+=" -fcommon"
