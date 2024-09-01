@@ -9,3 +9,4 @@ TERMUX_PKG_DEPENDS="libxml2, librevenge, liblangtag, zlib"
 TERMUX_PKG_BUILD_DEPENDS="boost, libwpg, libetonyek"
 
 # TODO: detect Archlinux update
+
