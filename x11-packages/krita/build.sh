@@ -26,9 +26,9 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 # -DBUILD_KRITA_QT_DESIGNER_PLUGINS=ON
 
-# # needed only when qt5-qtbase is also installed in the system and causing -I$TERMUX_PREFIX/include overriding -isystem $TERMUX_PREFIX/include/qt6.
-# termux_step_pre_configure() {
-# 	CFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat -Wno-incomplete-type $CFLAGS"
-# 	CPPFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat -Wno-incomplete-type $CPPFLAGS"
-# 	CXXFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat -Wno-incomplete-type $CXXFLAGS"
-# }
+# needed only when qt5-qtbase is also installed in the system and causing -I$TERMUX_PREFIX/include overriding -isystem $TERMUX_PREFIX/include/qt6.
+termux_step_pre_configure() {
+	CFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CFLAGS"
+	CPPFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CPPFLAGS"
+	CXXFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CXXFLAGS"
+}
