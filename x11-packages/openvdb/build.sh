@@ -1,0 +1,37 @@
+TERMUX_PKG_HOMEPAGE=https://www.openvdb.org/
+TERMUX_PKG_DESCRIPTION="Academy Software Foundation OpenVDB (sparse volumetric data library)"
+TERMUX_PKG_LICENSE=MPL-2.0
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_VERSION=11.0.0
+TERMUX_PKG_SRCURL=https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=a87c3d7dd6d83db896b1db2d81115f0c2f780660394137c7215192f2750065b3
+TERMUX_PKG_DEPENDS="blosc, boost, tbb, openexr, zlib, jemalloc, log4cplus"
+TERMUX_PKG_BUILD_DEPENDS="cmake, ninja, doxygen, python-numpy"
+TERMUX_PKG_BUILD_IN_SRC=true
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+-DCMAKE_BUILD_TYPE=Release
+-DBUILD_SHARED_LIBS=ON
+-DOPENVDB_BUILD_CORE=ON
+-DOPENVDB_BUILD_BINARIES=OFF
+-DOPENVDB_BUILD_DOCS=OFF
+-DOPENVDB_BUILD_UNITTESTS=OFF
+-DOPENVDB_BUILD_PYTHON_MODULE=OFF
+-DOPENVDB_ENABLE_RPATH=OFF
+-DUSE_BLOSC=ON
+-DUSE_ZLIB=ON
+-DUSE_OPENEXR=ON
+-DUSE_TBB=ON
+-DUSE_JEMALLOC=ON
+-DUSE_LOG4CPLUS=ON
+-DDISABLE_AX=ON
+-DDISABLE_MAYA=ON
+-DDISABLE_HOUDINI=ON
+-DDISABLE_STATIC_LIB=ON
+-DOPENVDB_CORE_SHARED=ON
+-DOPENVDB_CORE_STATIC=OFF
+-DOPENVDB_FUTURE_DEPRECATED=OFF
+"
+
+# The default termux_step_configure, termux_step_make, and termux_step_make_install
+# are expected to work for a standard CMake project.
+# No need to override them unless specific issues arise during testing.
