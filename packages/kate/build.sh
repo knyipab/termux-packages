@@ -13,12 +13,12 @@ TERMUX_PKG_BUILD_DEPENDS="extra-cmake-modules, kf6-kdoctools, qtkeychain-qt6, kf
 TERMUX_PKG_AUTO_UPDATE=true
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
--DCMAKE_SYSTEM_NAME=Linux
--DBUILD_TESTING=OFF
--DKF6_HOST_TOOLING=$TERMUX_PREFIX/opt/kf6/cross/lib/cmake/
+	-DCMAKE_SYSTEM_NAME=Linux
+	-DBUILD_TESTING=OFF
+	-DKF6_HOST_TOOLING=$TERMUX_PREFIX/opt/kf6/cross/lib/cmake/
 "
 
 termux_step_pre_configure() {
-    # Empty for now
-    return 0
+	# Empty for now
+	return 0
 }
