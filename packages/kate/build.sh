@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE='https://apps.kde.org/kate/'
 TERMUX_PKG_DESCRIPTION='Advanced text editor'
-TERMUX_PKG_LICENSE="GPL-2.0-or-later LGPL-2.0-or-later"
+TERMUX_PKG_LICENSE="GPL-2.0-or-later,LGPL-2.0-or-later"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="25.04.1"
 TERMUX_PKG_SRCURL="https://download.kde.org/stable/release-service/${TERMUX_PKG_VERSION}/src/kate-${TERMUX_PKG_VERSION}.tar.xz"
