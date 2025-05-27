@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://www.salome-platform.org
 TERMUX_PKG_DESCRIPTION="MED file format library for scientific data exchange"
-TERMUX_PKG_LICENSE=LGPL2.1
+TERMUX_PKG_LICENSE=LGPL-2.1
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=4.1.0
 TERMUX_PKG_SRCURL=https://files.salome-platform.org/Salome/other/med-${TERMUX_PKG_VERSION}.tar.gz
