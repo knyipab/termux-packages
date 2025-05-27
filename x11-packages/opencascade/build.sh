@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://www.opencascade.com/
 TERMUX_PKG_DESCRIPTION="Opencascade Technology (OCCT), 3D modeling and numerical simulation C++ library"
-TERMUX_PKG_LICENSE="LGPL-2.1-or-later WITH OCCT-LGPL-exception-1.0"
+TERMUX_PKG_LICENSE="LGPL-2.1"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=7.7.2
 # Source URL uses version with underscores, e.g., V7_7_2
