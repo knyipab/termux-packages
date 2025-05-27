@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://coin3d.github.io/
 TERMUX_PKG_DESCRIPTION="High-level, retained-mode 3D graphics library (Open Inventor clone)"
-TERMUX_PKG_LICENSE=BSD-3-Clause
+TERMUX_PKG_LICENSE="BSD 3-Clause"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=4.0.2
 TERMUX_PKG_SRCURL=https://github.com/coin3d/coin/archive/refs/tags/Coin-${TERMUX_PKG_VERSION}.tar.gz
