@@ -14,8 +14,28 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DKDE_INSTALL_QTPLUGINDIR=lib/qt6/plugins
 "
 
-termux_step_pre_configure() {
-	CFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CFLAGS"
-	CPPFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CPPFLAGS"
-	CXXFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CXXFLAGS"
+termux_step_host_build() {
+	termux_setup_cmake
+	cd "$TERMUX_PKG_SRCDIR/src/tools"
+	# patch CMakeLists.txt
+	mv CMakeLists.txt CMakeLists.txt.bak
+	cat > CMakeLists.txt <<-EOF
+	cmake_minimum_required(VERSION 3.16)
+	add_link_options("-Wl,-rpath=${TERMUX_PREFIX}/opt/qt6/cross/lib")
+
+	find_package(Qt6 REQUIRED COMPONENTS Core Widgets Xml)
+
+	function(ecm_mark_nongui_executable)
+	endfunction()
+
+	EOF
+	cat CMakeLists.txt.bak >> CMakeLists.txt
+
+	mkdir -p build
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=MinSizeRel \
+		-DCMAKE_PREFIX_PATH="$TERMUX_PREFIX/opt/qt6/cross/lib/cmake" \
+		.
+	cmake --build build
+	mv CMakeLists.txt.bak CMakeLists.txt
 }
