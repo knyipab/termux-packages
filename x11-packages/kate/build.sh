@@ -17,6 +17,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 	-DBUILD_TESTING=OFF
 	-DKF6_HOST_TOOLING=$TERMUX_PREFIX/opt/kf6/cross/lib/cmake/
 	-DUSE_DBUS=OFF
+	-DKDE_INSTALL_QMLDIR=lib/qt6/qml
+	-DKDE_INSTALL_QTPLUGINDIR=lib/qt6/plugins
 "
 
 termux_step_pre_configure() {
