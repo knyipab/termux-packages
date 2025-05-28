@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://www.salome-platform.org
 TERMUX_PKG_DESCRIPTION="MED file format library for scientific data exchange"
-TERMUX_PKG_LICENSE=LGPL-2.1
+TERMUX_PKG_LICENSE=LGPL2.1
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=4.1.0
 TERMUX_PKG_SRCURL=https://files.salome-platform.org/Salome/other/med-${TERMUX_PKG_VERSION}.tar.gz
@@ -15,7 +15,3 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DMEDFILE_BUILD_TESTS=OFF
 -DMEDFILE_USE_MPI=OFF
 "
-
-# The default termux_step_configure, termux_step_make, and termux_step_make_install
-# are expected to work for a standard CMake project.
-# No need to override them unless specific issues arise during testing.

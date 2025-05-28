@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://liblas.org/
 TERMUX_PKG_DESCRIPTION="Library for reading and writing LAS LiDAR format"
-TERMUX_PKG_LICENSE="BSD 3-Clause"
+TERMUX_PKG_LICENSE=BSD-3-Clause
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=1.8.1
 TERMUX_PKG_SRCURL=https://download.osgeo.org/liblas/libLAS-${TERMUX_PKG_VERSION}.tar.bz2
