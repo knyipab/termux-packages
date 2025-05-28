@@ -8,7 +8,7 @@ TERMUX_PKG_SHA256='820f0412a8485472844ea83881c47e1b90093ce3e2729e6910f9d3593fe53
 
 TERMUX_PKG_DEPENDS="libc++, kf6-karchive, kf6-kbookmarks, kf6-kcolorscheme, kf6-kcompletion, kf6-kconfig, kf6-kconfigwidgets, kf6-kcoreaddons, kf6-kguiaddons, kf6-ki18n, kf6-kiconthemes, kf6-kio, kf6-knewstuff, kf6-kparts, kf6-kservice, kf6-ktexteditor, kf6-kuserfeedback, kf6-kwidgetsaddons, kf6-kwindowsystem, kf6-kxmlgui, qt6-qtbase, syntax-highlighting"
 
-TERMUX_PKG_BUILD_DEPENDS="extra-cmake-modules, kf6-kdoctools, kf6-kconfig-cross-tools"
+TERMUX_PKG_BUILD_DEPENDS="extra-cmake-modules, kf6-kconfig-cross-tools"
 
 TERMUX_PKG_AUTO_UPDATE=true
 
