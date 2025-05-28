@@ -46,7 +46,3 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DOCCT_WITH_VTK_DYNLINK=ON
 -DBUILD_DRAW_EXE=OFF
 "
-
-# The default termux_step_configure, termux_step_make, and termux_step_make_install
-# are expected to work for a standard CMake project.
-# No need to override them unless specific issues arise during testing.

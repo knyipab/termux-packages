@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://github.com/coin3d/pivy
 TERMUX_PKG_DESCRIPTION="Python bindings for Coin3D library"
-TERMUX_PKG_LICENSE=BSD-3-Clause
+TERMUX_PKG_LICENSE="BSD 3-Clause"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=0.6.9
 TERMUX_PKG_SRCURL=https://github.com/coin3d/pivy/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz

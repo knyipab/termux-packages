@@ -19,7 +19,3 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_SHARED_LIBS=ON
 -DCGNS_USE_SHARED=ON
 "
-
-# The default termux_step_configure, termux_step_make, and termux_step_make_install
-# are expected to work for a standard CMake project.
-# No need to override them.
