@@ -1,22 +1,15 @@
 TERMUX_PKG_HOMEPAGE='https://api.kde.org/frameworks/ksyntaxhighlighting/html/index.html'
-TERMUX_PKG_DESCRIPTION='Syntax highlighting engine for Kate syntax definitions'
+TERMUX_PKG_DESCRIPTION='Syntax highlighting engine for structured text and code'
 TERMUX_PKG_LICENSE='MIT'
 TERMUX_PKG_MAINTAINER='@termux'
-TERMUX_PKG_VERSION='6.3.0'
-TERMUX_PKG_SRCURL='https://download.kde.org/stable/frameworks/6.3/syntax-highlighting-6.3.0.tar.xz'
-TERMUX_PKG_SHA256='38300a35c969bef5fa36b437d54342da0a0c805282a657519bd4e2f7b42df984'
+TERMUX_PKG_VERSION='6.14.0'
+TERMUX_PKG_SRCURL='https://download.kde.org/stable/frameworks/${TERMUX_PKG_VERSION%.*}/syntax-highlighting-${TERMUX_PKG_VERSION}.tar.xz'
+TERMUX_PKG_SHA256='dfdc025ac968a7d0cb430826e54f3e96b4ca8798cff4b5df7df493e2d0e4dfbc'
 TERMUX_PKG_DEPENDS='qt6-qtbase, libc++'
-TERMUX_PKG_BUILD_DEPENDS='extra-cmake-modules, kf6-kconfig-cross-tools, perl'
+TERMUX_PKG_BUILD_DEPENDS='extra-cmake-modules (>= ${TERMUX_PKG_VERSION}), kf6-kconfig-cross-tools (>= ${TERMUX_PKG_VERSION}), qt6-qttools, perl'
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
-	-DCMAKE_SYSTEM_NAME=Linux
-	-DBUILD_TESTING=OFF
-	-DKF6_HOST_TOOLING=$TERMUX_PREFIX/opt/kf6/cross/lib/cmake/
-	-DKDE_INSTALL_QMLDIR=lib/qt6/qml
-	-DKDE_INSTALL_QTPLUGINDIR=lib/qt6/plugins
-	-DQt6_DIR=$TERMUX_PREFIX/lib/cmake/Qt6
+-DCMAKE_SYSTEM_NAME=Linux
+-DKDE_INSTALL_QMLDIR=lib/qt6/qml
+-DKDE_INSTALL_QTPLUGINDIR=lib/qt6/plugins
 "
-
-termux_step_pre_configure() {
-	return 0
-}
