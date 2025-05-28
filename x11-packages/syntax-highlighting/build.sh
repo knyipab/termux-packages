@@ -13,3 +13,9 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DKDE_INSTALL_QMLDIR=lib/qt6/qml
 -DKDE_INSTALL_QTPLUGINDIR=lib/qt6/plugins
 "
+
+termux_step_pre_configure() {
+	CFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CFLAGS"
+	CPPFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CPPFLAGS"
+	CXXFLAGS="-I$TERMUX_PREFIX/include/qt6 -I$TERMUX_PREFIX/include/qt6/QtCore5Compat $CXXFLAGS"
+}
